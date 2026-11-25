@@ -182,7 +182,10 @@ def md_to_html(md: str) -> str:
                 "<tr>" + "".join(f"<td>{inline(c)}</td>" for c in row) + "</tr>"
                 for row in rows
             )
-            out.append(f"<table><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table>")
+            out.append(
+                '<div class="tablewrap"><table><thead><tr>'
+                f"{head}</tr></thead><tbody>{body}</tbody></table></div>"
+            )
             continue
 
         # heading
@@ -375,7 +378,10 @@ PAGE = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>%%TITLE%%</title>
 <meta name="description" content="%%DESC%%">
-<meta name="theme-color" content="#0c0c0c">
+<meta name="theme-color" content="#1c1c1c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="icon" href="%%ROOT%%assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="%%ROOT%%assets/style.css">
 <script>
@@ -388,6 +394,7 @@ PAGE = """<!DOCTYPE html>
   <a class="brand" href="%%ROOT%%index.html"><span class="mark">OC</span><span>OpenCSE</span></a>
   <div class="searchwrap">
     <input id="search" type="search" placeholder="Search courses and notes" autocomplete="off" aria-label="Search">
+    <kbd class="kbd">⌘K</kbd>
     <div id="results" class="results" hidden></div>
   </div>
   <button id="theme" class="iconbtn" aria-label="Switch colour theme">Dark</button>
@@ -399,8 +406,26 @@ PAGE = """<!DOCTYPE html>
   </main>
 </div>
 <footer class="footer">
-  <p><strong>OpenCSE</strong> &middot; built by students, for students.</p>
-  <p class="muted">Unofficial and unaffiliated. Course names and syllabus topics belong to their respective institutions. Content is shared under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p>
+  <p class="close-line">Built by students,<br>for the batch behind us.</p>
+  <div class="footer-grid">
+    <div>
+      <p class="foot-label">Browse</p>
+      <a href="%%ROOT%%index.html">Home</a>
+      <a href="%%ROOT%%courses/index.html">All courses</a>
+    </div>
+    <div>
+      <p class="foot-label">Project</p>
+      <a href="https://github.com/morozoko07-maker/opencse/blob/main/DISCLAIMER.md">Disclaimer</a>
+      <a href="https://github.com/morozoko07-maker/opencse/blob/main/CONTRIBUTING.md">Contributing</a>
+      <a href="https://github.com/morozoko07-maker/opencse">Source</a>
+    </div>
+    <div>
+      <p class="foot-label">Licence</p>
+      <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
+      <span class="foot-note">Share and adapt, credit the authors.</span>
+    </div>
+  </div>
+  <p class="fine">Unofficial and unaffiliated. Course names, codes and syllabus topics belong to their respective institutions. Material is shared for study only.</p>
 </footer>
 <script>window.SITE_ROOT = "%%ROOT%%";</script>
 <script src="%%ROOT%%assets/app.js"></script>
@@ -483,45 +508,69 @@ def render_index(courses: list[Course]) -> None:
     total_docs = sum(len(c.docs) for c in courses)
     total_files = sum(len(c.files) for c in courses)
     total_bytes = sum(f[1] for c in courses for f in c.files)
+    first_sem = sorted(by_sem)[0] if by_sem else "semester-3"
 
     parts = [
         '<section class="hero">',
-        f'<p class="eyebrow">Unofficial · student-run</p>',
-        f"<h1>{SITE_NAME}</h1>",
-        f'<p class="lede">Notes, lab reports and exam prep, organised by semester '
-        "so the next batch starts further ahead than we did.</p>",
-        '<div class="stats">',
-        f'<div><strong>{len(courses)}</strong><span>courses</span></div>',
-        f'<div><strong>{total_docs}</strong><span>documents</span></div>',
-        f'<div><strong>{total_files}</strong><span>files</span></div>',
-        f'<div><strong>{human_size(total_bytes)}</strong><span>material</span></div>',
+        '<div class="hero-copy">',
+        '<p class="eyebrow">Unofficial · student-run</p>',
+        '<h1>Notes for the<br>CSE syllabus.</h1>',
+        '<p class="lede">Every subject from semester 3 to 7, in one place: written '
+        "summaries, previous year papers and lab work, organised so the next batch "
+        "starts further ahead than we did.</p>",
+        '<div class="hero-actions">'
+        f'<a class="btn" href="#{first_sem}">Start with {pretty_semester(first_sem).lower()}</a>'
+        '<a class="link" href="courses/index.html">All courses<span class="arrow">→</span></a>'
         "</div>",
+        "</div>",
+        '<aside class="hero-index">',
+        '<p class="index-label">Contents</p>',
+        "<ol>",
+    ]
+    for sem in sorted(by_sem):
+        n = len(by_sem[sem])
+        parts.append(
+            f'<li><a href="#{sem}"><span class="ix-n">{sem.split("-")[-1].zfill(2)}</span>'
+            f'<span class="ix-t">{pretty_semester(sem)}</span>'
+            f'<span class="ix-c">{plural(n, "course")}</span></a></li>'
+        )
+    parts += [
+        "</ol>",
+        f'<p class="index-note">{plural(len(courses), "course")} · '
+        f'{plural(total_docs, "page")} · {plural(total_files, "file")} · '
+        f"{human_size(total_bytes)}</p>",
+        "</aside>",
         "</section>",
     ]
 
     for sem in sorted(by_sem):
-        parts.append(f'<section class="sem-block"><h2>{pretty_semester(sem)}</h2><div class="cards">')
-        for c in sorted(by_sem[sem], key=lambda x: x.title.lower()):
-            code = c.meta.get("code", "")
+        n = len(by_sem[sem])
+        parts.append(
+            f'<section class="sem-block" id="{sem}">'
+            f'<div class="sem-head"><h2><span class="num">{sem.split("-")[-1].zfill(2)}</span>'
+            f'{pretty_semester(sem)}</h2><span class="count">{plural(n, "course")}</span></div>'
+            '<div class="cards">'
+        )
+        for i, c in enumerate(sorted(by_sem[sem], key=lambda x: x.title.lower()), 1):
             chips = []
-            if code:
-                chips.append(f'<span class="chip">{html.escape(code)}</span>')
             if c.meta.get("credits"):
                 chips.append(f'<span class="chip">{html.escape(c.meta["credits"])} credits</span>')
             summary = c.meta.get("summary", "")
             pending = not c.files and len(c.docs) <= 1
             cls = "card pending" if pending else "card"
             meta = (
-                "awaiting material"
+                "Awaiting material"
                 if pending
                 else f"{plural(len(c.docs), 'page')} · {plural(len(c.files), 'file')}"
             )
             parts.append(
                 f'<a class="{cls}" href="{c.url_dir}/index.html">'
+                f'<div class="card-top"><span class="card-num">{i:02d}</span>'
+                f'<span class="card-code">{html.escape(c.meta.get("code", "—"))}</span></div>'
                 f'<h3>{html.escape(c.title)}</h3>'
                 f'<p>{html.escape(summary) if summary else "Notes and resources."}</p>'
-                f'<div class="chips">{"".join(chips)}</div>'
-                f'<div class="card-meta">{meta}</div>'
+                f'<div class="card-foot"><span class="card-meta">{meta}</span>'
+                f'<span class="card-go">{"" if pending else "→"}</span></div>'
                 "</a>"
             )
         parts.append("</div></section>")
@@ -581,7 +630,7 @@ def render_course(course: Course, courses: list[Course]) -> None:
             parts.append("</ul></section>")
 
     if course.files:
-        parts.append('<section class="section"><h2>Downloadable files</h2>')
+        parts.append('<section class="section"><h2>Downloadable files</h2><div class="tablewrap">')
         parts.append('<table class="filetable"><thead><tr><th>File</th><th>Type</th><th>Size</th><th></th></tr></thead><tbody>')
         for rel, size, url in course.files:
             ext = Path(rel).suffix.lstrip(".").upper() or "—"
@@ -590,7 +639,7 @@ def render_course(course: Course, courses: list[Course]) -> None:
                 f'<td>{human_size(size)}</td>'
                 f'<td><a class="dl" href="{root}{url}">Download</a></td></tr>'
             )
-        parts.append("</tbody></table></section>")
+        parts.append("</tbody></table></div></section>")
     else:
         parts.append('<p class="empty">No files in this course yet. Add some to <code>'
                      + html.escape(course.path.relative_to(ROOT).as_posix())

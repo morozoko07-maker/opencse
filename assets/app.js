@@ -20,7 +20,7 @@
       htmlEl.setAttribute("data-theme", next);
       try { localStorage.setItem("opencse-theme", next); } catch (e) {}
       var meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute("content", next === "dark" ? "#0c0c0c" : "#f3f1ec");
+      if (meta) meta.setAttribute("content", next === "dark" ? "#1c1c1c" : "#eeecea");
       paintThemeButton();
     });
   }
