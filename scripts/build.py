@@ -285,6 +285,38 @@ def md_to_html(md: str) -> str:
 
 
 
+MATERIAL_CATEGORIES = [
+    "Lab manuals & programs",
+    "Notes",
+    "Question banks & papers",
+    "Slides",
+    "Syllabus & scheme",
+    "Books & references",
+    "Other files",
+]
+
+
+def classify_material(rel: str) -> str:
+    p = rel.lower()
+    ext = Path(p).suffix
+    if any(w in p for w in ("lab", "manual", "experiment", "program", "code")):
+        return MATERIAL_CATEGORIES[0]
+    if any(w in p for w in ("syllabus", "scheme", "calendar", "timetable")):
+        return MATERIAL_CATEGORIES[4]
+    if any(w in p for w in ("book", "textbook", "handbook", "reference")):
+        return MATERIAL_CATEGORIES[5]
+    if any(w in p for w in ("question", "ques", "model", "paper", "qp", "pyq",
+                            "exam", "see", "internal", "bank")):
+        return MATERIAL_CATEGORIES[2]
+    if "note" in p:
+        return MATERIAL_CATEGORIES[1]
+    if ext in (".ppt", ".pptx"):
+        return MATERIAL_CATEGORIES[3]
+    if any(w in p for w in ("module", "unit", "chapter", "summary")):
+        return MATERIAL_CATEGORIES[1]
+    return MATERIAL_CATEGORIES[6]
+
+
 def toc_html(body: str) -> str:
     heads = re.findall(r'<h2 id="([^"]+)">(.*?)</h2>', body, flags=re.S)
     if len(heads) < 4:
@@ -540,7 +572,7 @@ def render_index(courses: list[Course]) -> None:
         '<div class="hero-copy">',
         '<p class="eyebrow">Unofficial · student-run</p>',
         '<h1>Notes for the<br>CSE syllabus.</h1>',
-        '<p class="lede">Every subject from first year to semester 7, in one place: written '
+        '<p class="lede">Every subject from first year to final project, in one place: written '
         "summaries, previous year papers and lab work, organised so the next batch "
         "starts further ahead than we did.</p>",
         '<div class="hero-actions">'
@@ -653,46 +685,54 @@ def render_course(course: Course, courses: list[Course]) -> None:
     if course.meta.get("summary"):
         parts.append(f'<p class="lede">{html.escape(course.meta["summary"])}</p>')
 
+    rev = next((d for d in course.docs if d.title.lower().startswith("revision")), None)
+    if rev:
+        heads = re.findall(r'<h2 id="([^"]+)">(.*?)</h2>', rev.body_html, flags=re.S)
+        skip = {"exam-pattern", "question-bank", "last-24-hours"}
+        topics = [
+            (hid, strip_tags(re.sub(r'<a class="anchor".*?</a>', "", h)).strip())
+            for hid, h in heads if hid not in skip
+        ]
+        if len(topics) >= 3:
+            link = Path(rev.out_rel).name
+            parts.append('<nav class="topics"><p class="topics-label">Topics</p><ul>'
+                         + "".join(f'<li><a href="{link}#{hid}">{html.escape(txt)}</a></li>'
+                                   for hid, txt in topics)
+                         + "</ul></nav>")
+
     if main_doc:
         parts.append(toc_html(main_doc.body_html))
 
     if course.files:
         total = sum(item[1] for item in course.files)
-        groups = {}
+        cats = {}
         for item in course.files:
-            rel = item[0]
-            if rel.startswith("material/"):
-                parts_ = rel[len("material/"):].split("/")
-                key = parts_[0] if len(parts_) > 1 else "Files"
-            else:
-                key = "Files"
-            groups.setdefault(key, []).append(item)
-        head = ('<section class="section"><h2>Material <span class="section-count">'
-                + plural(len(course.files), "file") + " \u00b7 " + human_size(total)
-                + '</span></h2>')
-        parts.append(head)
-        parts.append('<p class="section-note">Model papers, notes and lab work. '
-                     'Open a folder to browse, or download a single file.</p>')
-        for name in sorted(groups):
-            items = groups[name]
+            cats.setdefault(classify_material(item[0]), []).append(item)
+        parts.append('<section class="section"><h2>Material <span class="section-count">'
+                     + plural(len(course.files), "file") + " \u00b7 " + human_size(total)
+                     + '</span></h2>')
+        parts.append('<p class="section-note">Grouped by what the file is: lab work, '
+                     'notes, question banks, slides. Open a section to browse.</p>')
+        for cat in MATERIAL_CATEGORIES:
+            items = cats.get(cat)
+            if not items:
+                continue
             gsize = sum(i[1] for i in items)
-            opened = " open" if len(course.files) <= 12 else ""
+            opened = " open" if len(items) <= 6 else ""
             parts.append('<details class="filegroup"' + opened + '><summary>'
-                         '<span class="fg-name">' + html.escape(name) + '</span>'
+                         '<span class="fg-name">' + cat + '</span>'
                          '<span class="fg-meta">' + plural(len(items), "file") + " \u00b7 "
-                         + human_size(gsize) + '</span></summary>'
-                         '<ul class="filelist">')
+                         + human_size(gsize) + '</span></summary><ul class="filelist">')
             for rel, size, url in sorted(items):
                 ext = Path(rel).suffix.lstrip(".").upper() or "FILE"
                 leaf = rel.rsplit("/", 1)[-1]
-                sub = rel.rsplit("/", 2)[-2] if rel.count("/") >= 2 else ""
-                if sub in ("material",) or sub == name:
-                    sub = ""
-                bits = [x for x in (sub, ext, human_size(size)) if x]
+                folder = rel.rsplit("/", 2)[-2] if rel.count("/") >= 2 else ""
+                if folder == "material":
+                    folder = ""
+                meta = " \u00b7 ".join(x for x in (folder, ext, human_size(size)) if x)
                 parts.append('<li><a href="' + root + quote(url) + '">'
                              '<span class="fname">' + html.escape(leaf) + '</span>'
-                             '<span class="fmeta">' + " \u00b7 ".join(bits)
-                             + '</span></a></li>')
+                             '<span class="fmeta">' + html.escape(meta) + '</span></a></li>')
             parts.append("</ul></details>")
         parts.append("</section>")
     else:
