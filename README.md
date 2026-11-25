@@ -23,7 +23,8 @@ Built so juniors start further ahead than we did.
 | 3 | Object Oriented Programming with C++ | BCS306B | full Module 1–2 notes, 19 compiled programs |
 | 4 | Database Management Systems | BCS403 | exam guide + schema protocol (HTML) |
 
-More courses, PDFs and slide decks will be added over time. The full Sem 3–7
+Each covered subject ends with a **revision sheet** and a **question bank taken from its
+actual model and IA papers**. More courses, PDFs and slide decks will be added over time. The full Sem 3–7
 syllabus is already scaffolded — 32 course folders with the right names and
 codes — so adding material is just dropping files in and rebuilding.
 

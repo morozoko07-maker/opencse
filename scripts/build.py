@@ -15,6 +15,7 @@ import re
 import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent.parent
 COURSES_DIR = ROOT / "courses"
@@ -654,7 +655,7 @@ def render_course(course: Course, courses: list[Course]) -> None:
             parts.append(
                 f'<tr><td class="mono">{html.escape(rel)}</td><td>{ext}</td>'
                 f'<td>{human_size(size)}</td>'
-                f'<td><a class="dl" href="{root}{url}">Download</a></td></tr>'
+                f'<td><a class="dl" href="{root}{quote(url)}">Download</a></td></tr>'
             )
         parts.append("</tbody></table></div></section>")
     else:
