@@ -1,5 +1,6 @@
 ---
 title: Database Management Systems
+code: BCS403
 semester: 4
 credits: 4
 cie: 50

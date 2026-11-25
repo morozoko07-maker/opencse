@@ -21,7 +21,7 @@ Built so juniors start further ahead than we did.
 | 3 | Operating Systems | 1BCS304 | syllabus outline, study order |
 | 3 | Data Structures & Applications | BCS304 | 4-chapter study guide with traces and question banks |
 | 3 | Object Oriented Programming with C++ | BCS306B | full Module 1–2 notes, 19 compiled programs |
-| 4 | Database Management Systems | — | exam guide + schema protocol (HTML) |
+| 4 | Database Management Systems | BCS403 | exam guide + schema protocol (HTML) |
 
 More courses, PDFs and slide decks will be added over time. The structure is
 built for that: drop a folder in, rebuild, done.

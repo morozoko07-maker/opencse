@@ -514,8 +514,12 @@ def render_index(courses: list[Course]) -> None:
             )
         parts.append("</div></section>")
 
-    page("index.html", SITE_NAME, "\n".join(parts), courses, None)
+    roadmap = ROOT / "roadmap.md"
+    if roadmap.exists():
+        _, md = read_front_matter(roadmap.read_text(encoding="utf-8", errors="replace"))
+        parts.append(f'<section class="section prose">{md_to_html(md)}</section>')
 
+    page("index.html", SITE_NAME, "\n".join(parts), courses, None)
 
 def render_all_courses(courses: list[Course]) -> None:
     rows = []
