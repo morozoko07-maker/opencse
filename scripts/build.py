@@ -394,7 +394,7 @@ PAGE = """<!DOCTYPE html>
 <link rel="icon" href="%%ROOT%%assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="%%ROOT%%assets/style.css">
 <script>
-(function(){var t=null;try{var m=/[?&]theme=(light|dark)/.exec(location.search);t=m?m[1]:localStorage.getItem("opencse-theme");}catch(e){}document.documentElement.setAttribute("data-theme",t||"dark");})();
+(function(){var t=null;try{var m=/[?&]theme=(light|dark|oled)/.exec(location.search);t=m?m[1]:localStorage.getItem("opencse-theme");}catch(e){}document.documentElement.setAttribute("data-theme",t||"dark");})();
 </script>
 </head>
 <body>
@@ -406,7 +406,11 @@ PAGE = """<!DOCTYPE html>
     <kbd class="kbd">⌘K</kbd>
     <div id="results" class="results" hidden></div>
   </div>
-  <button id="theme" class="iconbtn" aria-label="Switch colour theme">Dark</button>
+  <div class="themebar" role="group" aria-label="Colour theme">
+    <button type="button" data-theme-set="light">Light</button>
+    <button type="button" data-theme-set="dark">Dark</button>
+    <button type="button" data-theme-set="oled">OLED</button>
+  </div>
 </header>
 <div class="layout">
   <aside class="sidebar">%%SIDEBAR%%</aside>
@@ -546,7 +550,7 @@ def render_index(courses: list[Course]) -> None:
     parts += [
         "</ol>",
         f'<p class="index-note">{plural(len(courses), "course")} · '
-        f'{plural(total_docs, "page")} · {plural(total_files, "file")} · '
+        f'{plural(total_docs, "page")}<br>{plural(total_files, "file")} · '
         f"{human_size(total_bytes)}</p>",
         "</aside>",
         "</section>",

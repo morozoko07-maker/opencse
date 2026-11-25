@@ -372,3 +372,38 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   font-family: var(--mono); font-size: .56rem; letter-spacing: .06em;
   text-transform: uppercase; color: var(--muted);
 }
+
+/* ---------- OLED: true black, easier at night ---------- */
+html[data-theme="oled"] {
+  --bg: #000000;
+  --surface: #0a0a0a;
+  --panel: #060606;
+  --border: rgba(255, 255, 255, .1);
+  --border-strong: rgba(255, 255, 255, .24);
+  --ink: #ededed;
+  --muted: #86868a;
+  --accent: #9db096;
+  --accent-dim: rgba(157, 176, 150, .12);
+  --code-bg: #060606;
+  --code-ink: #e6e6e2;
+  color-scheme: dark;
+}
+
+/* ---------- theme switch ---------- */
+.themebar {
+  display: flex; flex: none; overflow: hidden;
+  border: 1px solid var(--border); border-radius: var(--r);
+}
+.themebar button {
+  height: 34px; padding: 0 9px; cursor: pointer;
+  background: transparent; color: var(--muted); border: 0;
+  border-left: 1px solid var(--border);
+  font-family: var(--mono); font-size: .58rem; letter-spacing: .09em;
+  text-transform: uppercase; transition: color .16s ease, background .16s ease;
+}
+.themebar button:first-child { border-left: 0; }
+.themebar button:hover { color: var(--ink); }
+.themebar button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+@media (max-width: 560px) {
+  .themebar button { padding: 0 6px; font-size: .54rem; }
+}

@@ -5,25 +5,27 @@
   var root = window.SITE_ROOT || "";
   var htmlEl = document.documentElement;
 
-  /* ---- theme: matte dark by default, warm light on tap ---- */
-  var themeBtn = document.getElementById("theme");
-  function paintThemeButton() {
-    if (!themeBtn) return;
-    var dark = htmlEl.getAttribute("data-theme") === "dark";
-    themeBtn.textContent = dark ? "Light" : "Dark";
-    themeBtn.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
+  /* ---- theme: light, charcoal, pitch-black OLED ---- */
+  var themeBtns = document.querySelectorAll("[data-theme-set]");
+  var themeMeta = document.querySelector('meta[name="theme-color"]');
+  var THEME_COLOURS = { light: "#eeecea", dark: "#1c1c1c", oled: "#000000" };
+
+  function paintTheme() {
+    var current = htmlEl.getAttribute("data-theme") || "dark";
+    themeBtns.forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-theme-set") === current ? "true" : "false");
+    });
+    if (themeMeta) themeMeta.setAttribute("content", THEME_COLOURS[current] || "#1c1c1c");
   }
-  paintThemeButton();
-  if (themeBtn) {
-    themeBtn.addEventListener("click", function () {
-      var next = htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  paintTheme();
+  themeBtns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var next = b.getAttribute("data-theme-set");
       htmlEl.setAttribute("data-theme", next);
       try { localStorage.setItem("opencse-theme", next); } catch (e) {}
-      var meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute("content", next === "dark" ? "#1c1c1c" : "#eeecea");
-      paintThemeButton();
+      paintTheme();
     });
-  }
+  });
 
   /* ---- search ---- */
   var input = document.getElementById("search");
