@@ -1,0 +1,662 @@
+#!/usr/bin/env python3
+"""OpenCSE static site generator.
+
+Standard library only (Python 3.9+). Run from anywhere:
+
+    python3 scripts/build.py
+
+It reads `courses/`, writes `site/`, and needs no network access.
+"""
+from __future__ import annotations
+
+import html
+import json
+import re
+import shutil
+from dataclasses import dataclass, field
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+COURSES_DIR = ROOT / "courses"
+ASSETS_DIR = ROOT / "assets"
+SITE_DIR = ROOT / "site"
+
+SITE_NAME = "OpenCSE"
+SITE_TAGLINE = "CSE course notes, shared by students"
+SITE_DESC = (
+    "An unofficial, student-run collection of notes, lab reports and exam "
+    "preparation material for Computer Science & Engineering coursework."
+)
+
+# ---------------------------------------------------------------------------
+# Small helpers
+# ---------------------------------------------------------------------------
+
+
+def slugify(text: str) -> str:
+    text = re.sub(r"[^\w\s-]", "", text, flags=re.UNICODE).strip().lower()
+    text = re.sub(r"[\s_]+", "-", text)
+    return text[:80].strip("-") or "page"
+
+
+def human_size(num: int) -> str:
+    for unit in ("B", "KB", "MB", "GB"):
+        if num < 1024 or unit == "GB":
+            return f"{num:.0f} {unit}" if unit == "B" else f"{num:.1f} {unit}"
+        num /= 1024
+    return f"{num:.1f} GB"
+
+
+def pretty_semester(name: str) -> str:
+    m = re.search(r"(\d+)", name)
+    return f"Semester {m.group(1)}" if m else name.replace("-", " ").title()
+
+
+def read_front_matter(text: str) -> tuple[dict[str, str], str]:
+    """Parse a tiny `key: value` front-matter block at the top of a file."""
+    if not text.startswith("---"):
+        return {}, text
+    end = text.find("\n---", 3)
+    if end == -1:
+        return {}, text
+    meta: dict[str, str] = {}
+    for line in text[3:end].strip().splitlines():
+        if ":" in line and not line.lstrip().startswith("#"):
+            key, _, value = line.partition(":")
+            meta[key.strip().lower()] = value.strip().strip("\"'")
+    return meta, text[end + 4 :].lstrip("\n")
+
+
+def first_heading(md: str) -> str | None:
+    for line in md.splitlines():
+        if line.startswith("# "):
+            return strip_tags(inline(line[2:].strip()))
+    return None
+
+
+def strip_tags(text: str) -> str:
+    return re.sub(r"<[^>]+>", "", text)
+
+
+# ---------------------------------------------------------------------------
+# Markdown -> HTML (the subset the notes actually use)
+# ---------------------------------------------------------------------------
+
+LIST_RE = re.compile(r"^(\s*)([-*+]|\d+[.)])\s+(.*)$")
+TABLE_SEP_RE = re.compile(r"^\s*\|?[\s:|-]+\|[\s:|-]*$")
+HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
+
+
+def inline(text: str) -> str:
+    text = html.escape(text, quote=False)
+
+    # Protect inline code first: emphasis must not look inside it, and code may
+    # legitimately contain * or ** (e.g. `int **q`).
+    codes: list[str] = []
+
+    def stash(m: re.Match[str]) -> str:
+        codes.append(m.group(1))
+        return f"\x00{len(codes) - 1}\x00"
+
+    text = re.sub(r"`([^`]+)`", stash, text)
+
+    text = re.sub(
+        r"!\[([^\]]*)\]\(([^)\s]+)\)",
+        r'<img alt="\1" src="\2" loading="lazy">',
+        text,
+    )
+    text = re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)", r'<a href="\2">\1</a>', text)
+    text = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
+    text = re.sub(r"(?<!\*)\*([^*\n]+)\*(?!\*)", r"<em>\1</em>", text)
+
+    for i, code in enumerate(codes):
+        text = text.replace(f"\x00{i}\x00", f"<code>{code}</code>")
+    return text
+
+
+def _split_row(line: str) -> list[str]:
+    line = line.strip()
+    if line.startswith("|"):
+        line = line[1:]
+    if line.endswith("|"):
+        line = line[:-1]
+    return [cell.strip() for cell in line.split("|")]
+
+
+def _list_html(items: list[tuple[int, bool, str]]) -> str:
+    idx = 0
+
+    def parse_level(indent: int) -> tuple[str, int]:
+        nonlocal idx
+        ordered = items[idx][1]
+        tag = "ol" if ordered else "ul"
+        parts = [f"<{tag}>"]
+        while idx < len(items) and items[idx][0] == indent:
+            parts.append("<li>" + inline(items[idx][2]))
+            idx += 1
+            while idx < len(items) and items[idx][0] > indent:
+                sub, idx = parse_level(items[idx][0])
+                parts.append(sub)
+            parts.append("</li>")
+        parts.append(f"</{tag}>")
+        return "".join(parts), idx
+
+    out = []
+    while idx < len(items):
+        chunk, idx = parse_level(items[idx][0])
+        out.append(chunk)
+    return "\n".join(out)
+
+
+def md_to_html(md: str) -> str:
+    lines = md.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    out: list[str] = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+
+        # fenced code
+        if line.lstrip().startswith("```"):
+            lang = line.lstrip()[3:].strip()
+            i += 1
+            buf = []
+            while i < len(lines) and not lines[i].lstrip().startswith("```"):
+                buf.append(lines[i])
+                i += 1
+            i += 1
+            code = html.escape("\n".join(buf))
+            cls = f' class="language-{html.escape(lang)}"' if lang else ""
+            out.append(f"<pre><code{cls}>{code}</code></pre>")
+            continue
+
+        # table
+        if "|" in line and i + 1 < len(lines) and TABLE_SEP_RE.match(lines[i + 1]):
+            header = _split_row(line)
+            i += 2
+            rows = []
+            while i < len(lines) and "|" in lines[i] and lines[i].strip():
+                rows.append(_split_row(lines[i]))
+                i += 1
+            head = "".join(f"<th>{inline(c)}</th>" for c in header)
+            body = "".join(
+                "<tr>" + "".join(f"<td>{inline(c)}</td>" for c in row) + "</tr>"
+                for row in rows
+            )
+            out.append(f"<table><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table>")
+            continue
+
+        # heading
+        m = HEADING_RE.match(line)
+        if m:
+            level = len(m.group(1))
+            text = m.group(2).strip()
+            anchor = slugify(strip_tags(inline(text)))
+            out.append(
+                f'<h{level} id="{anchor}">{inline(text)}'
+                f'<a class="anchor" href="#{anchor}" aria-hidden="true">#</a></h{level}>'
+            )
+            i += 1
+            continue
+
+        # horizontal rule
+        if re.match(r"^\s*([-*_])(\s*\1){2,}\s*$", line):
+            out.append("<hr>")
+            i += 1
+            continue
+
+        # blockquote (with lazy continuation lines)
+        if line.startswith(">"):
+            buf = []
+            while i < len(lines) and (lines[i].startswith(">") or (buf and lines[i].strip())):
+                buf.append(re.sub(r"^>\s?", "", lines[i]))
+                i += 1
+            out.append("<blockquote>" + md_to_html("\n".join(buf)) + "</blockquote>")
+            continue
+
+        # lists
+        if LIST_RE.match(line):
+            items: list[tuple[int, bool, str]] = []
+            while i < len(lines):
+                m = LIST_RE.match(lines[i])
+                if not m:
+                    if not lines[i].strip():
+                        j = i
+                        while j < len(lines) and not lines[j].strip():
+                            j += 1
+                        if j < len(lines) and LIST_RE.match(lines[j]):
+                            i = j
+                            continue
+                    break
+                indent = len(m.group(1))
+                items.append((indent, m.group(2)[0].isdigit(), m.group(3).strip()))
+                i += 1
+                # wrapped continuation lines belong to the same item
+                cont = []
+                while i < len(lines) and lines[i].strip():
+                    if (
+                        LIST_RE.match(lines[i])
+                        or HEADING_RE.match(lines[i])
+                        or lines[i].startswith(">")
+                        or lines[i].lstrip().startswith("```")
+                        or re.match(r"^\s*([-*_])(\s*\1){2,}\s*$", lines[i])
+                        or len(lines[i]) - len(lines[i].lstrip()) <= indent
+                    ):
+                        break
+                    cont.append(lines[i].strip())
+                    i += 1
+                if cont:
+                    ci, co, ct = items[-1]
+                    items[-1] = (ci, co, ct + " " + " ".join(cont))
+            out.append(_list_html(items))
+            continue
+
+        # blank
+        if not line.strip():
+            i += 1
+            continue
+
+        # paragraph
+        buf = []
+        while i < len(lines) and lines[i].strip() and not (
+            HEADING_RE.match(lines[i])
+            or LIST_RE.match(lines[i])
+            or lines[i].startswith(">")
+            or lines[i].lstrip().startswith("```")
+            or re.match(r"^\s*([-*_])(\s*\1){2,}\s*$", lines[i])
+            or ("|" in lines[i] and i + 1 < len(lines) and TABLE_SEP_RE.match(lines[i + 1]))
+        ):
+            buf.append(lines[i].strip())
+            i += 1
+        out.append("<p>" + inline(" ".join(buf)) + "</p>")
+
+    return "\n".join(out)
+
+
+# ---------------------------------------------------------------------------
+# Content discovery
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class Doc:
+    title: str
+    source: Path
+    out_rel: str
+    body_html: str
+    text: str = ""
+
+
+@dataclass
+class Course:
+    semester: str
+    slug: str
+    path: Path
+    meta: dict[str, str] = field(default_factory=dict)
+    docs: list[Doc] = field(default_factory=list)
+    files: list[tuple[str, int, str]] = field(default_factory=list)
+
+    @property
+    def title(self) -> str:
+        return self.meta.get("title") or self.path.name.replace("-", " ").title()
+
+    @property
+    def url_dir(self) -> str:
+        return f"courses/{self.semester}/{self.slug}"
+
+
+def load_doc(path: Path, out_rel: str, fallback_title: str, strip_title: bool = False) -> Doc:
+    raw = path.read_text(encoding="utf-8", errors="replace")
+    meta, body = read_front_matter(raw)
+    title = meta.get("title") or first_heading(body) or fallback_title
+    if strip_title:
+        lines = body.splitlines()
+        for idx, line in enumerate(lines):
+            if line.startswith("# "):
+                del lines[idx]
+                if idx < len(lines) and not lines[idx].strip():
+                    del lines[idx]
+                break
+        body = "\n".join(lines)
+    return Doc(
+        title=title,
+        source=path,
+        out_rel=out_rel,
+        body_html=md_to_html(body),
+        text=re.sub(r"\s+", " ", strip_tags(md_to_html(body))),
+    )
+
+
+def discover() -> list[Course]:
+    courses: list[Course] = []
+    if not COURSES_DIR.exists():
+        return courses
+    for sem_dir in sorted(p for p in COURSES_DIR.iterdir() if p.is_dir()):
+        for cdir in sorted(p for p in sem_dir.iterdir() if p.is_dir()):
+            readme = cdir / "README.md"
+            meta: dict[str, str] = {}
+            if readme.exists():
+                meta, _ = read_front_matter(readme.read_text(encoding="utf-8", errors="replace"))
+            course = Course(semester=sem_dir.name, slug=cdir.name, path=cdir, meta=meta)
+            base = course.url_dir
+
+            if readme.exists():
+                course.docs.append(
+                    load_doc(readme, f"{base}/index.html", course.title, strip_title=True)
+                )
+
+            notes = sorted(cdir.rglob("*.md"))
+            for note in notes:
+                if note == readme:
+                    continue
+                out_name = slugify(note.stem) + ".html"
+                course.docs.append(load_doc(note, f"{base}/{out_name}", note.stem))
+
+            for f in sorted(cdir.rglob("*")):
+                if not f.is_file() or f.suffix.lower() == ".md":
+                    continue
+                if any(part.startswith(".") for part in f.relative_to(cdir).parts):
+                    continue
+                rel = f.relative_to(cdir).as_posix()
+                course.files.append(
+                    (rel, f.stat().st_size, f"files/{course.semester}/{course.slug}/{rel}")
+                )
+            courses.append(course)
+    return courses
+
+
+# ---------------------------------------------------------------------------
+# HTML shell
+# ---------------------------------------------------------------------------
+
+PAGE = """<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>%%TITLE%%</title>
+<meta name="description" content="%%DESC%%">
+<link rel="icon" href="%%ROOT%%assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="%%ROOT%%assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem("opencse-theme");if(!t){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();
+</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="%%ROOT%%index.html"><span class="mark">OC</span><span>OpenCSE</span></a>
+  <div class="searchwrap">
+    <input id="search" type="search" placeholder="Search courses and notes" autocomplete="off" aria-label="Search">
+    <div id="results" class="results" hidden></div>
+  </div>
+  <button id="theme" class="iconbtn" aria-label="Toggle colour theme" title="Toggle theme">&#9681;</button>
+</header>
+<div class="layout">
+  <aside class="sidebar">%%SIDEBAR%%</aside>
+  <main class="content">
+%%BODY%%
+  </main>
+</div>
+<footer class="footer">
+  <p><strong>OpenCSE</strong> &middot; built by students, for students.</p>
+  <p class="muted">Unofficial and unaffiliated. Course names and syllabus topics belong to their respective institutions. Content is shared under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p>
+</footer>
+<script>window.SITE_ROOT = "%%ROOT%%";</script>
+<script src="%%ROOT%%assets/app.js"></script>
+</body>
+</html>
+"""
+
+
+def root_prefix(out_rel: str) -> str:
+    depth = len(Path(out_rel).parent.parts)
+    return "../" * depth
+
+
+def sidebar_html(courses: list[Course], active_dir: str | None, root: str) -> str:
+    by_sem: dict[str, list[Course]] = {}
+    for c in courses:
+        by_sem.setdefault(c.semester, []).append(c)
+
+    parts = ['<nav class="nav">', f'<a class="nav-home" href="{root}index.html">Home</a>']
+    parts.append(f'<a class="nav-home" href="{root}courses/index.html">All courses</a>')
+    for sem in sorted(by_sem):
+        parts.append(f'<div class="nav-group"><div class="nav-label">{pretty_semester(sem)}</div><ul>')
+        for c in sorted(by_sem[sem], key=lambda x: x.title.lower()):
+            active = " active" if c.url_dir == active_dir else ""
+            code = c.meta.get("code", "")
+            code_html = f'<span class="nav-code">{html.escape(code)}</span>' if code else ""
+            parts.append(
+                f'<li><a class="nav-link{active}" href="{root}{c.url_dir}/index.html">'
+                f'<span>{html.escape(c.title)}</span>{code_html}</a></li>'
+            )
+            if c.url_dir == active_dir and len(c.docs) > 1:
+                parts.append('<li><ul class="nav-sub">')
+                for d in c.docs[1:]:
+                    parts.append(
+                        f'<li><a href="{root}{d.out_rel}">{html.escape(d.title)}</a></li>'
+                    )
+                parts.append("</ul></li>")
+        parts.append("</ul></div>")
+    parts.append("</nav>")
+    return "\n".join(parts)
+
+
+def page(out_rel: str, title: str, body: str, courses: list[Course], active: str | None, desc: str = SITE_DESC) -> None:
+    root = root_prefix(out_rel)
+    full_title = SITE_NAME if title == SITE_NAME else f"{title} · {SITE_NAME}"
+    out = (
+        PAGE.replace("%%TITLE%%", html.escape(full_title))
+        .replace("%%DESC%%", html.escape(desc))
+        .replace("%%ROOT%%", root)
+        .replace("%%SIDEBAR%%", sidebar_html(courses, active, root))
+        .replace("%%BODY%%", body)
+    )
+    dest = SITE_DIR / out_rel
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(out, encoding="utf-8")
+
+
+def badge(label: str, value: str, kind: str = "") -> str:
+    cls = f"badge {kind}".strip()
+    return f'<span class="{cls}"><span class="badge-k">{html.escape(label)}</span>{html.escape(value)}</span>'
+
+
+def plural(n: int, word: str) -> str:
+    return f"{n} {word}" + ("" if n == 1 else "s")
+
+
+# ---------------------------------------------------------------------------
+# Rendering
+# ---------------------------------------------------------------------------
+
+
+def render_index(courses: list[Course]) -> None:
+    by_sem: dict[str, list[Course]] = {}
+    for c in courses:
+        by_sem.setdefault(c.semester, []).append(c)
+
+    total_docs = sum(len(c.docs) for c in courses)
+    total_files = sum(len(c.files) for c in courses)
+    total_bytes = sum(f[1] for c in courses for f in c.files)
+
+    parts = [
+        '<section class="hero">',
+        f'<p class="eyebrow">Unofficial · student-run</p>',
+        f"<h1>{SITE_NAME}</h1>",
+        f'<p class="lede">Notes, lab reports and exam prep, organised by semester '
+        "so the next batch starts further ahead than we did.</p>",
+        '<div class="stats">',
+        f'<div><strong>{len(courses)}</strong><span>courses</span></div>',
+        f'<div><strong>{total_docs}</strong><span>documents</span></div>',
+        f'<div><strong>{total_files}</strong><span>files</span></div>',
+        f'<div><strong>{human_size(total_bytes)}</strong><span>material</span></div>',
+        "</div>",
+        "</section>",
+    ]
+
+    for sem in sorted(by_sem):
+        parts.append(f'<section class="sem-block"><h2>{pretty_semester(sem)}</h2><div class="cards">')
+        for c in sorted(by_sem[sem], key=lambda x: x.title.lower()):
+            code = c.meta.get("code", "")
+            chips = []
+            if code:
+                chips.append(f'<span class="chip">{html.escape(code)}</span>')
+            if c.meta.get("credits"):
+                chips.append(f'<span class="chip">{html.escape(c.meta["credits"])} credits</span>')
+            summary = c.meta.get("summary", "")
+            parts.append(
+                f'<a class="card" href="{c.url_dir}/index.html">'
+                f'<h3>{html.escape(c.title)}</h3>'
+                f'<p>{html.escape(summary) if summary else "Notes and resources."}</p>'
+                f'<div class="chips">{"".join(chips)}</div>'
+                f'<div class="card-meta">{plural(len(c.docs), "page")} · {plural(len(c.files), "file")}</div>'
+                "</a>"
+            )
+        parts.append("</div></section>")
+
+    page("index.html", SITE_NAME, "\n".join(parts), courses, None)
+
+
+def render_all_courses(courses: list[Course]) -> None:
+    rows = []
+    for c in sorted(courses, key=lambda x: (x.semester, x.title.lower())):
+        rows.append(
+            f'<tr><td><a href="../{c.url_dir}/index.html">{html.escape(c.title)}</a></td>'
+            f'<td>{html.escape(c.meta.get("code", "—"))}</td>'
+            f"<td>{pretty_semester(c.semester)}</td>"
+            f"<td>{len(c.docs)}</td><td>{len(c.files)}</td></tr>"
+        )
+    body = (
+        "<h1>All courses</h1>"
+        '<table><thead><tr><th>Course</th><th>Code</th><th>Semester</th><th>Pages</th><th>Files</th></tr></thead>'
+        f'<tbody>{"".join(rows)}</tbody></table>'
+    )
+    page("courses/index.html", "All courses", body, courses, None)
+
+
+def render_course(course: Course, courses: list[Course]) -> None:
+    out_rel = f"{course.url_dir}/index.html"
+    main_doc = course.docs[0] if course.docs else None
+
+    badges = []
+    if course.meta.get("code"):
+        badges.append(badge("Code", course.meta["code"]))
+    if course.meta.get("credits"):
+        badges.append(badge("Credits", course.meta["credits"]))
+    if course.meta.get("cie"):
+        badges.append(badge("CIE", course.meta["cie"], "cie"))
+    if course.meta.get("see"):
+        badges.append(badge("SEE", course.meta["see"], "see"))
+
+    root = root_prefix(out_rel)
+    parts = [
+        f'<p class="crumb"><a href="{root}index.html">Courses</a> / '
+        f'<a href="{root}courses/index.html">'
+        f"{pretty_semester(course.semester)}</a></p>",
+        f"<h1>{html.escape(course.title)}</h1>",
+        f'<div class="badges">{"".join(badges)}</div>',
+    ]
+    if course.meta.get("summary"):
+        parts.append(f'<p class="lede">{html.escape(course.meta["summary"])}</p>')
+
+    if main_doc:
+        parts.append(f'<article class="prose">{main_doc.body_html}</article>')
+        if len(course.docs) > 1:
+            parts.append('<section class="section"><h2>Study pages</h2><ul class="pagelist">')
+            for d in course.docs[1:]:
+                parts.append(
+                    f'<li><a href="{Path(d.out_rel).name}">{html.escape(d.title)}</a></li>'
+                )
+            parts.append("</ul></section>")
+
+    if course.files:
+        parts.append('<section class="section"><h2>Downloadable files</h2>')
+        parts.append('<table class="filetable"><thead><tr><th>File</th><th>Type</th><th>Size</th><th></th></tr></thead><tbody>')
+        for rel, size, url in course.files:
+            ext = Path(rel).suffix.lstrip(".").upper() or "—"
+            parts.append(
+                f'<tr><td class="mono">{html.escape(rel)}</td><td>{ext}</td>'
+                f'<td>{human_size(size)}</td>'
+                f'<td><a class="dl" href="{root}{url}">Download</a></td></tr>'
+            )
+        parts.append("</tbody></table></section>")
+    else:
+        parts.append('<p class="empty">No files in this course yet. Add some to <code>'
+                     + html.escape(course.path.relative_to(ROOT).as_posix())
+                     + "</code> and rebuild.</p>")
+
+    parts.append(
+        '<p class="editnote">Spotted something wrong? '
+        '<a href="https://github.com/morozoko07-maker/opencse">Open an issue or PR</a> — '
+        "corrections are the most valuable contribution.</p>"
+    )
+    page(out_rel, course.title, "\n".join(parts), courses, course.url_dir,
+         desc=course.meta.get("summary", SITE_DESC))
+
+    # Sub-pages (notes/*.md)
+    for d in course.docs[1:]:
+        droot = root_prefix(d.out_rel)
+        body = (
+            f'<p class="crumb"><a href="{droot}index.html">Courses</a> / '
+            f'<a href="index.html">{html.escape(course.title)}</a></p>'
+            f"<h1>{html.escape(d.title)}</h1>"
+            f'<article class="prose">{d.body_html}</article>'
+            f'<p class="editnote">Source: <code>{html.escape(d.source.relative_to(ROOT).as_posix())}</code></p>'
+        )
+        page(d.out_rel, f"{course.title}: {d.title}", body, courses, course.url_dir)
+
+
+def render_search_index(courses: list[Course]) -> None:
+    entries = []
+    for c in courses:
+        for d in c.docs:
+            entries.append(
+                {
+                    "t": d.title,
+                    "c": c.title,
+                    "code": c.meta.get("code", ""),
+                    "u": d.out_rel,
+                    "x": d.text[:6000],
+                }
+            )
+    (SITE_DIR / "search-index.json").write_text(
+        json.dumps(entries, ensure_ascii=False), encoding="utf-8"
+    )
+
+
+FAVICON = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<rect width="64" height="64" rx="14" fill="#4f46e5"/>
+<text x="32" y="43" font-family="system-ui,sans-serif" font-size="26" font-weight="700"
+ fill="#fff" text-anchor="middle">OC</text></svg>
+"""
+
+
+def main() -> int:
+    if SITE_DIR.exists():
+        shutil.rmtree(SITE_DIR)
+    SITE_DIR.mkdir(parents=True)
+
+    shutil.copytree(ASSETS_DIR, SITE_DIR / "assets")
+    (SITE_DIR / "assets" / "favicon.svg").write_text(FAVICON, encoding="utf-8")
+
+    courses = discover()
+    for course in courses:
+        for rel, _size, url in course.files:
+            src = course.path / rel
+            dest = SITE_DIR / url
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dest)
+
+    render_index(courses)
+    render_all_courses(courses)
+    for course in courses:
+        render_course(course, courses)
+    render_search_index(courses)
+
+    print(f"Built {len(courses)} courses, {sum(len(c.docs) for c in courses)} pages, "
+          f"{sum(len(c.files) for c in courses)} files -> {SITE_DIR}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,16 @@
+# Build output
+site/
+
+# Python
+__pycache__/
+*.pyc
+
+# Editors / OS
+.DS_Store
+.vscode/
+.idea/
+Thumbs.db
+
+# Large files should not be committed accidentally
+*.zip
+*.7z

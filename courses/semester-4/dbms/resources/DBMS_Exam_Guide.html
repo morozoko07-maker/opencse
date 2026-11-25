@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS Exam Guide — Module 1 &amp; 4 (VTU BCS403)</title>
+<meta name="description" content="A short VTU BCS403 exam guide for DBMS Module 1 and Module 4: definitions, three-schema architecture, ER model, SQL, COMPANY queries, triggers, assertions and the solved CIE-I paper.">
+<meta name="theme-color" content="#120807">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23120807'/%3E%3Cpath d='M16 4l4 12-4 12-4-12z' fill='none' stroke='%23c0392b' stroke-width='1.4'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#120807; --panel:#1b0d09; --panel2:#22110c; --line:#3a2722;
+  --text:#efe7e0; --muted:#c7b4aa; --dim:#9a8073; --red:#c0392b; --red2:#e06a50; --gold:#c7a25a;
+  --serif:"Noto Serif CJK JP","Noto Serif JP",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --nav:56px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav) + 18px)}
+body{background:var(--bg);color:var(--text);font:300 16px/1.7 var(--sans);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+::selection{background:#6e1d16;color:#fff}
+:focus-visible{outline:1px solid var(--text);outline-offset:3px}
+.skip{position:absolute;left:-9999px;top:0;background:var(--text);color:var(--bg);padding:.7rem 1rem;z-index:100}
+.skip:focus{left:1rem;top:1rem}
+.wrap{width:min(1080px,100% - 2.5rem);margin-inline:auto}
+.narrow{width:min(780px,100% - 2.5rem);margin-inline:auto}
+.eyebrow{font:500 .63rem/1.4 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--red2)}
+.muted{color:var(--dim)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+
+/* nav */
+.nav{position:fixed;inset:0 0 auto;height:var(--nav);z-index:50;display:flex;align-items:center;gap:1rem;padding:0 clamp(1rem,3vw,2rem);background:rgba(18,8,7,.98);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;flex:none}
+.brand svg{width:22px;height:22px;color:var(--red)}
+.brand b{font:500 .88rem/1.2 var(--serif);letter-spacing:.2em;white-space:nowrap}
+.brand small{display:block;font:400 .52rem/1.4 var(--mono);letter-spacing:.18em;color:var(--dim);margin-top:1px}
+.nav ul{display:flex;gap:.2rem;list-style:none;margin-left:auto}
+.nav a.lnk{display:flex;align-items:center;min-height:40px;padding:0 .6rem;text-decoration:none;font:500 .6rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.nav a.lnk:hover{color:var(--text)}
+@media(max-width:820px){.nav ul{display:none}.brand small{display:none}}
+
+/* hero */
+.hero{min-height:68svh;display:flex;align-items:flex-end;padding:calc(var(--nav) + 4rem) 0 3rem;border-bottom:1px solid var(--line);background:
+  radial-gradient(ellipse 65% 55% at 78% 40%,rgba(192,57,43,.16),transparent 65%),
+  linear-gradient(180deg,transparent 60%,rgba(18,8,7,.9))}
+.hero h1{font:500 clamp(2.6rem,7vw,5.6rem)/.98 var(--serif);text-transform:uppercase;letter-spacing:.01em;margin:.7rem 0 1rem}
+.hero h1 em{display:block;color:var(--red2);font-style:italic}
+.hero p.lead{max-width:650px;color:var(--muted);font-size:1.03rem;line-height:1.8}
+.hero p.lead b{color:var(--text);font-weight:500}
+.actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.6rem}
+.btn{display:inline-flex;align-items:center;gap:.5rem;min-height:42px;padding:0 .9rem;text-decoration:none;border:1px solid var(--line);font:500 .62rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);cursor:pointer;background:transparent}
+.btn:hover{border-color:var(--red);color:var(--text)}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.primary:hover{background:#8e251b;border-color:#8e251b}
+.hero-meta{display:flex;flex-wrap:wrap;gap:1.8rem;margin-top:2.4rem;padding-top:1rem;border-top:1px solid var(--line);font:500 .58rem/1.5 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.hero-meta b{display:block;font:500 1.05rem/1.4 var(--serif);letter-spacing:.04em;color:var(--text);text-transform:none}
+
+/* sections */
+section{padding:clamp(2rem,4vw,3.4rem) 0;border-bottom:1px solid var(--line);scroll-margin-top:calc(var(--nav) + 18px)}
+.sec-head{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.4rem}
+.sec-num{font:500 clamp(2rem,4vw,3.4rem)/.9 var(--serif);color:transparent;-webkit-text-stroke:1px #6f5145;flex:none}
+.sec-head h2{font:500 clamp(1.5rem,3.4vw,2.3rem)/1.1 var(--serif);text-transform:uppercase;letter-spacing:.03em}
+.sec-head p{color:var(--dim);font-size:.86rem;margin-top:.35rem;max-width:680px}
+
+/* cards */
+.card{border:1px solid var(--line);background:linear-gradient(180deg,rgba(27,13,9,.85),rgba(18,8,7,.5));margin-bottom:.9rem}
+.card-h{display:flex;align-items:baseline;gap:.7rem;padding:.75rem .9rem;border-bottom:1px solid var(--line);background:rgba(34,17,12,.5)}
+.card-h span{font:500 .58rem/1 var(--mono);letter-spacing:.1em;color:var(--red2);flex:none}
+.card-h h3{font:500 1.02rem/1.35 var(--serif);letter-spacing:.02em}
+.card-b{padding:.9rem}
+.card-b>*+*{margin-top:.7rem}
+.card-b p,.card-b li{color:var(--muted);font-size:.9rem;line-height:1.7}
+.card-b ul,.card-b ol{padding-left:1.1rem}
+.card-b li{margin:.22rem 0}
+.card-b li::marker{color:var(--red)}
+.card-b b,.card-b strong{color:var(--text);font-weight:500}
+.card-b code{font:.82em var(--mono);background:rgba(239,231,224,.07);border:1px solid rgba(239,231,224,.1);padding:.02em .25em;color:#e8c5b6}
+.card-b .code code{background:none;border:0;padding:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+@media(max-width:760px){.two{grid-template-columns:1fr}}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);margin:.8rem 0}
+table.tbl{width:100%;border-collapse:collapse;font-size:.83rem;min-width:520px}
+.tbl th{text-align:left;font:500 .55rem/1.4 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--red2);padding:.5rem .6rem;background:rgba(192,57,43,.07);border-bottom:1px solid var(--line)}
+.tbl td{padding:.48rem .6rem;border-bottom:1px solid rgba(58,39,34,.7);color:var(--muted);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl b{color:var(--text);font-weight:500}
+.tbl code{font:.82em var(--mono);white-space:nowrap}
+
+/* code */
+.code{border:1px solid var(--line);background:#0b0504;margin:.7rem 0}
+.code-h{display:flex;justify-content:space-between;gap:.5rem;padding:.3rem .55rem;border-bottom:1px solid var(--line);font:500 .52rem/1.4 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.code-h b{color:var(--red2);font-weight:500}
+pre{overflow-x:auto;padding:.65rem .75rem;font:.76rem/1.65 var(--mono);color:#e4d2c6;tab-size:2}
+pre .c{color:#8d6d60}
+
+/* callouts */
+.note{border-left:2px solid var(--red);background:rgba(192,57,43,.06);padding:.65rem .8rem;font-size:.87rem;color:var(--muted);margin:.8rem 0}
+.note b{color:var(--text);font-weight:500}
+.warn{border-left-color:var(--gold);background:rgba(199,162,90,.06)}
+
+/* diagram */
+.fig{border:1px solid var(--line);background:rgba(11,5,4,.5);padding:.7rem;margin:.8rem 0}
+.fig svg{display:block;width:100%;height:auto}
+.fig figcaption{font:500 .52rem/1.5 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:.45rem}
+.arch{display:grid;gap:.35rem;margin:.7rem 0}
+.arch .lvl{border:1px solid var(--line);padding:.55rem .7rem;background:var(--panel)}
+.arch .lvl b{display:block;font:500 .95rem/1.4 var(--serif)}
+.arch .lvl span{font:500 .55rem/1.4 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.arch .map{font:500 .55rem/1.4 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gold);text-align:center;padding:.15rem 0}
+
+/* query list */
+.query{border:1px solid var(--line);padding:.7rem .8rem;margin-bottom:.55rem;background:rgba(27,13,9,.55)}
+.query h4{font:500 .84rem/1.5 var(--sans);color:var(--text);margin-bottom:.35rem}
+.query .code{margin:0}
+.query p{font-size:.8rem;color:var(--dim);margin-top:.3rem}
+
+/* question bank */
+.qbar{display:flex;gap:.5rem;align-items:center;border:1px solid var(--line);background:#0b0504;padding:0 .65rem;margin:.7rem 0 1rem;min-height:40px}
+.qbar input{flex:1;border:0;background:transparent;color:var(--text);outline:0;font:.86rem var(--sans);min-width:0}
+.qbar input::placeholder{color:#7d5c4c}
+input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
+.qbar span{font:500 .55rem/1 var(--mono);letter-spacing:.1em;color:var(--dim);white-space:nowrap}
+details.q{border:1px solid var(--line);background:rgba(27,13,9,.5);margin-bottom:.4rem}
+details.q summary{display:flex;gap:.6rem;align-items:flex-start;padding:.6rem .7rem;cursor:pointer;list-style:none;font-size:.88rem;line-height:1.55;color:var(--text)}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::after{content:"+";margin-left:auto;font:.9rem var(--mono);color:var(--dim);flex:none}
+details.q[open] summary::after{content:"–";color:var(--red2)}
+details.q summary span{font:500 .54rem/1.6 var(--mono);color:var(--red2);flex:none;min-width:2rem}
+details.q .a{padding:0 .7rem .7rem 3rem;border-top:1px solid rgba(58,39,34,.6);padding-top:.55rem;font-size:.85rem;line-height:1.65;color:var(--muted)}
+details.q .a p+p{margin-top:.35rem}
+details.q .a ul{padding-left:1rem;margin:.3rem 0}
+details.q .a code{font:.82em var(--mono);background:rgba(239,231,224,.07);padding:.02em .2em;color:#e8c5b6}
+details.q .a pre{margin:.4rem 0;border:1px solid var(--line);background:#0b0504}
+details.q .a b{color:var(--text);font-weight:500}
+.qgroup{margin-top:1rem}
+.qgroup h3{font:500 .68rem/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem}
+.qempty{padding:1rem;border:1px dashed var(--line);color:var(--dim);font-size:.85rem;text-align:center}
+
+/* paper */
+.paper{border:1px solid var(--line);background:rgba(27,13,9,.45);padding:1rem}
+.paper-h{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:.6rem;margin-bottom:.8rem}
+.paper-h h3{font:500 1.15rem/1.3 var(--serif)}
+.paper-h p{font:500 .52rem/1.6 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);text-align:right}
+.pq{border-top:1px solid rgba(58,39,34,.7);padding:.75rem 0}
+.pq:first-of-type{border-top:0}
+.pq h4{font:500 .95rem/1.4 var(--serif);color:var(--red2);margin-bottom:.3rem}
+.pq h4 span{float:right;font:500 .52rem var(--mono);color:var(--dim);letter-spacing:.08em}
+.pq p,.pq li{font-size:.85rem;color:var(--muted);line-height:1.65}
+.pq ol,.pq ul{padding-left:1.1rem;margin:.3rem 0}
+.pq .code{margin:.45rem 0}
+
+/* footer */
+footer{padding:2rem 0;font:500 .55rem/1.8 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+footer b{color:var(--muted);font-weight:400}
+
+.jump{display:none;margin-left:auto;background:#0b0504;color:var(--muted);border:1px solid var(--line);font:500 .58rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:.45rem .5rem}
+@media(max-width:820px){.nav ul{display:none}.jump{display:block}}
+@media(max-width:620px){
+  body{font-size:15.5px}
+  .hero{min-height:auto;padding-top:calc(var(--nav) + 3rem)}
+  .sec-num{font-size:2rem}
+  .card-b{padding:.75rem}
+  details.q .a{padding-left:.8rem}
+  .paper{padding:.7rem}
+}
+@media print{
+  body{background:#fff;color:#111}
+  .nav,.hero .actions,.qbar,footer{display:none!important}
+  .hero{min-height:auto;padding:1rem 0;border-bottom:1px solid #bbb;background:none}
+  .hero h1,.hero h1 em{color:#111}
+  section{break-inside:auto;border-color:#ccc}
+  .card,.paper,.query,.fig,.code{border-color:#bbb;background:#fff;break-inside:avoid}
+  .card-b p,.card-b li,.pq p,.pq li,details.q .a{color:#222}
+  details.q{border-color:#bbb;background:#fff}
+  details.q .a{display:block!important}
+  pre{color:#111;background:#f5f5f5}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the guide</a>
+
+<header class="nav">
+  <a class="brand" href="#top" aria-label="DBMS Exam Guide, back to top">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3l5 13-5 13-5-13z" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="16" cy="16" r="2" fill="currentColor"/></svg>
+    <span><b>DBMS // EXAM GUIDE</b><small>VTU BCS403 · MODULE 1 + 4</small></span>
+  </a>
+  <ul>
+    <li><a class="lnk" href="#m1">Module 1</a></li>
+    <li><a class="lnk" href="#m4">Module 4</a></li>
+    <li><a class="lnk" href="#queries">Queries</a></li>
+    <li><a class="lnk" href="#bank">Questions</a></li>
+    <li><a class="lnk" href="#paper">Paper</a></li>
+    <li><a class="lnk" href="#lab">Lab</a></li>
+  </ul>
+  <select class="jump" id="jump" aria-label="Jump to a section">
+    <option value="">Jump to…</option>
+    <option value="m1">Module 1</option>
+    <option value="m4">Module 4</option>
+    <option value="queries">Queries</option>
+    <option value="bank">Questions</option>
+    <option value="paper">Solved paper</option>
+    <option value="lab">Lab</option>
+  </select>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">VTU · BCS403 · CIE-I · Modules 1 &amp; 4</p>
+    <h1>DBMS<em>Exam Guide</em></h1>
+    <p class="lead">Only what the paper asks. <b>Definitions, the three-schema diagram, the ER model, SQL queries, triggers and assertions</b> — plus the solved paper and the exact COMPANY schema.</p>
+    <div class="actions">
+      <a class="btn primary" href="#m1">Start with Module 1</a>
+      <a class="btn" href="#paper">Solved paper</a>
+      <a class="btn" href="#bank">Questions</a>
+    </div>
+    <div class="hero-meta">
+      <span><b>8 × 10</b> paper questions</span>
+      <span><b>2</b> modules</span>
+      <span><b>6</b> COMPANY tables</span>
+      <span><b>45</b> likely questions</span>
+    </div>
+  </div>
+</section>
+
+<section id="plan">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">00</div><div><h2>What the paper asks</h2><p>Your CIE-I paper maps almost one-to-one to these topics. Learn the starred ones first.</p></div></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Question</th><th>Topic</th><th>What to write</th><th>Marks</th></tr></thead>
+      <tbody>
+        <tr><td><b>Q1</b></td><td>Characteristics of the database approach</td><td>5 points + one line each</td><td>10</td></tr>
+        <tr><td><b>Q2</b></td><td>Schema vs instance</td><td>Comparison table + example</td><td>10</td></tr>
+        <tr><td><b>Q3</b></td><td>DDL and DML</td><td>Definition + syntax + one example each</td><td>10</td></tr>
+        <tr><td><b>Q4</b></td><td>Steps in query processing</td><td>6 steps + pipeline diagram</td><td>10</td></tr>
+        <tr><td><b>Q5–Q6</b></td><td>COMPANY SQL queries</td><td>6–8 queries with correct joins/grouping</td><td>20</td></tr>
+        <tr><td><b>Q7</b></td><td>Trigger</td><td>Syntax + <code>:OLD</code>/<code>:NEW</code> explanation</td><td>10</td></tr>
+        <tr><td><b>Q8</b></td><td>Assertion</td><td><code>NOT EXISTS</code> condition + explanation</td><td>10</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><b>If you have one night:</b> learn Q1–Q4 first (they are pure memory), then the six COMPANY queries, then the trigger and assertion. Do the solved paper last, with the answers covered.</div>
+  </div>
+</section>
+
+<!-- ================= MODULE 1 ================= -->
+<section id="m1">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">01</div><div><h2>Module 1 — Foundations &amp; ER</h2><p>Short notes. Each card is roughly one exam answer.</p></div></div>
+
+    <article class="card">
+      <div class="card-h"><span>1.1</span><h3>Definitions to memorise</h3></div>
+      <div class="card-b">
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>Term</th><th>One-line answer</th></tr></thead>
+          <tbody>
+            <tr><td><b>Data</b></td><td>Known facts that can be recorded and have an implicit meaning.</td></tr>
+            <tr><td><b>Database</b></td><td>A collection of related data representing a mini-world.</td></tr>
+            <tr><td><b>DBMS</b></td><td>Software to define, construct, manipulate and share a database.</td></tr>
+            <tr><td><b>Database system</b></td><td>The DBMS software + the data (+ applications).</td></tr>
+            <tr><td><b>Mini-world</b></td><td>The part of the real world represented in the database.</td></tr>
+            <tr><td><b>Metadata</b></td><td>Data about data — stored in the DBMS catalog.</td></tr>
+            <tr><td><b>Schema</b></td><td>Description of the database (intension); changes rarely.</td></tr>
+            <tr><td><b>Instance / state</b></td><td>Actual data at a moment (extension); changes on every update.</td></tr>
+            <tr><td><b>Data model</b></td><td>Concepts for structure + operations + constraints.</td></tr>
+            <tr><td><b>Valid state</b></td><td>A state that satisfies all schema constraints.</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>1.2</span><h3>Advantages of the database approach</h3></div>
+      <div class="card-b">
+        <ul>
+          <li><b>Controls redundancy</b> — one shared copy, less inconsistency.</li>
+          <li><b>Restricts unauthorised access</b> — central security.</li>
+          <li><b>Enforces integrity constraints</b> — keys and rules in one place.</li>
+          <li><b>Provides backup and recovery.</b></li>
+          <li><b>Supports multiple views and interfaces.</b></li>
+          <li><b>Efficient query processing</b> — indexes, optimisation.</li>
+          <li><b>Represents complex relationships</b> and supports concurrent users.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>1.3</span><h3>Characteristics of the database approach ★</h3></div>
+      <div class="card-b">
+        <ol>
+          <li><b>Self-describing:</b> the catalog stores metadata, so the DBMS can work with different databases.</li>
+          <li><b>Program–data independence:</b> change storage/structure without rewriting programs.</li>
+          <li><b>Data abstraction:</b> a data model hides physical storage details.</li>
+          <li><b>Multiple views:</b> each user sees only the data of interest.</li>
+          <li><b>Sharing and multi-user transaction processing:</b> concurrency control + recovery; supports OLTP.</li>
+        </ol>
+        <div class="note"><b>Memory:</b> Self-describing · Insulation · Abstraction · Multiple views · Sharing.</div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>1.4</span><h3>Users of a DBMS</h3></div>
+      <div class="card-b">
+        <div class="two">
+          <div><b>Actors on the scene</b><ul><li><b>DBA</b> — authorises access, monitors use, backup/recovery, tuning.</li><li><b>Database designer</b> — defines structure, constraints and transactions.</li><li><b>End users</b> — casual, naïve/parametric (bank teller), sophisticated (analyst), stand-alone.</li></ul></div>
+          <div><b>Workers behind the scene</b><ul><li>DBMS designers/implementers.</li><li>Tool developers.</li><li>Operators and maintenance staff.</li></ul></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>1.5</span><h3>Three-schema architecture &amp; data independence ★</h3></div>
+      <div class="card-b">
+        <div class="arch">
+          <div class="lvl"><b>External level</b><span>user views · many per database</span></div>
+          <div class="map">↕ logical mapping</div>
+          <div class="lvl"><b>Conceptual level</b><span>whole database structure + constraints</span></div>
+          <div class="map">↕ physical mapping</div>
+          <div class="lvl"><b>Internal level</b><span>files · pages · indexes · access paths</span></div>
+        </div>
+        <p><b>Logical data independence:</b> change the conceptual schema without changing external views or programs.</p>
+        <p><b>Physical data independence:</b> change the internal schema without changing the conceptual schema.</p>
+        <div class="note">Draw three stacked boxes, label the levels, and write both mappings. That is the diagram mark.</div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>1.6</span><h3>DBMS languages</h3></div>
+      <div class="card-b">
+        <ul>
+          <li><b>DDL</b> — defines the schema: <code>CREATE</code>, <code>ALTER</code>, <code>DROP</code>.</li>
+          <li><b>DML</b> — manipulates data: <code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>.</li>
+          <li><b>SDL</b> — defines internal storage structures.</li>
+          <li><b>VDL</b> — defines user views.</li>
+          <li><b>High-level DML</b> — declarative, set-oriented (SQL). <b>Low-level DML</b> — record-at-a-time, procedural.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>1.7</span><h3>ER model — the only concepts you need</h3></div>
+      <div class="card-b">
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>Concept</th><th>Meaning</th><th>COMPANY example</th></tr></thead>
+          <tbody>
+            <tr><td><b>Entity</b></td><td>Object in the mini-world</td><td>John Smith, Research department</td></tr>
+            <tr><td><b>Attribute</b></td><td>Property of an entity</td><td>Name, Salary, SSN</td></tr>
+            <tr><td><b>Simple / composite</b></td><td>Atomic / made of parts</td><td>Salary / Address(Street, City)</td></tr>
+            <tr><td><b>Multi-valued</b></td><td>Several values; double oval</td><td>{Dloc} — department locations</td></tr>
+            <tr><td><b>Derived</b></td><td>Calculated; dashed oval</td><td>Age from Bdate</td></tr>
+            <tr><td><b>Key</b></td><td>Unique identifier; underlined</td><td>SSN, Dno, Pno</td></tr>
+            <tr><td><b>Relationship</b></td><td>Association; diamond</td><td>WORKS_ON, MANAGES</td></tr>
+            <tr><td><b>Degree</b></td><td>Number of participating entity types</td><td>WORKS_ON is binary (2)</td></tr>
+            <tr><td><b>Cardinality</b></td><td>Maximum: 1:1, 1:N, M:N</td><td>MANAGES 1:1; WORKS_ON M:N</td></tr>
+            <tr><td><b>Participation</b></td><td>Minimum: total (double line) / partial</td><td>Every department has a manager</td></tr>
+            <tr><td><b>Weak entity</b></td><td>No key of its own; double rectangle</td><td>DEPENDENT</td></tr>
+            <tr><td><b>Partial key</b></td><td>Unique only within owner; dashed underline</td><td>Dependent Name</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>1.8</span><h3>COMPANY ER diagram ★</h3></div>
+      <div class="card-b">
+        <div class="fig">
+          <svg viewBox="0 0 960 590" role="img" aria-label="COMPANY ER diagram with EMPLOYEE, DEPARTMENT, PROJECT, weak entity DEPENDENT and relationships WORKS_FOR, MANAGES, CONTROLS, WORKS_ON, SUPERVISION, DEPENDENTS_OF.">
+            <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0l10 5-10 5z" fill="#9a8073"/></marker></defs>
+            <g stroke="#9a8073" stroke-width="1.1" fill="none">
+              <path d="M270 238 L300 218"/><path d="M300 178 L405 136"/>
+              <path d="M262 260 L455 186"/><path d="M486 160 L470 136"/>
+              <path d="M590 90 L614 143"/><path d="M655 158 L785 238"/>
+              <path d="M270 320 L440 330"/><path d="M510 330 L700 300"/>
+              <path d="M95 370 L118 405"/><path d="M135 442 L165 370"/>
+              <path d="M245 370 L270 422"/><path d="M302 458 L405 470"/>
+            </g>
+            <rect x="40" y="238" width="230" height="132" fill="#1b0d09" stroke="#d6c2bc"/>
+            <text x="155" y="259" fill="#efe7e0" font-family="Noto Serif CJK JP, Georgia, serif" font-size="15" text-anchor="middle" letter-spacing="2">EMPLOYEE</text>
+            <line x1="58" y1="268" x2="252" y2="268" stroke="#3a2722"/>
+            <g font-family="ui-monospace, monospace" font-size="9.5" fill="#d6c2bc">
+              <text x="58" y="284">SSN</text><line x1="58" y1="288" x2="83" y2="288" stroke="#e06a50"/>
+              <text x="58" y="298">Name</text><text x="58" y="312">Address</text><text x="58" y="326">Gender</text>
+              <text x="58" y="340">Salary</text><text x="58" y="354">SuperSSN</text><text x="58" y="366">Dno</text>
+              <text x="196" y="284" fill="#9a8073" font-size="8">key</text>
+            </g>
+            <rect x="360" y="24" width="230" height="112" fill="#1b0d09" stroke="#d6c2bc"/>
+            <text x="475" y="46" fill="#efe7e0" font-family="Noto Serif CJK JP, Georgia, serif" font-size="15" text-anchor="middle" letter-spacing="2">DEPARTMENT</text>
+            <line x1="378" y1="55" x2="572" y2="55" stroke="#3a2722"/>
+            <g font-family="ui-monospace, monospace" font-size="9.5" fill="#d6c2bc">
+              <text x="378" y="71">Dno</text><line x1="378" y1="75" x2="401" y2="75" stroke="#e06a50"/>
+              <text x="378" y="85">Dname</text><text x="378" y="99">MgrSSN</text><text x="378" y="113">MgrStartDate</text>
+              <text x="520" y="71" fill="#9a8073" font-size="8">key</text>
+            </g>
+            <rect x="700" y="238" width="220" height="106" fill="#1b0d09" stroke="#d6c2bc"/>
+            <text x="810" y="259" fill="#efe7e0" font-family="Noto Serif CJK JP, Georgia, serif" font-size="15" text-anchor="middle" letter-spacing="2">PROJECT</text>
+            <line x1="718" y1="268" x2="902" y2="268" stroke="#3a2722"/>
+            <g font-family="ui-monospace, monospace" font-size="9.5" fill="#d6c2bc">
+              <text x="718" y="284">Pno</text><line x1="718" y1="288" x2="741" y2="288" stroke="#e06a50"/>
+              <text x="718" y="298">Pname</text><text x="718" y="312">Plocation</text><text x="718" y="326">Dno</text>
+              <text x="860" y="284" fill="#9a8073" font-size="8">key</text>
+            </g>
+            <rect x="370" y="460" width="230" height="100" fill="#1b0d09" stroke="#d6c2bc"/>
+            <rect x="376" y="466" width="218" height="88" fill="none" stroke="#d6c2bc" stroke-width=".8"/>
+            <text x="485" y="486" fill="#efe7e0" font-family="Noto Serif CJK JP, Georgia, serif" font-size="14" text-anchor="middle" letter-spacing="1.5">DEPENDENT</text>
+            <g font-family="ui-monospace, monospace" font-size="9.5" fill="#d6c2bc">
+              <text x="390" y="504">Name</text><line x1="390" y1="508" x2="418" y2="508" stroke="#c7a25a" stroke-dasharray="3 2"/>
+              <text x="390" y="518">Gender</text><text x="390" y="532">Bdate</text><text x="390" y="546">Relationship</text>
+              <text x="530" y="504" fill="#9a8073" font-size="8">partial key</text>
+            </g>
+            <g fill="#22110c" stroke="#c0392b" stroke-width="1">
+              <polygon points="300,178 360,198 300,218 240,198"/>
+              <polygon points="470,160 525,180 470,200 415,180"/>
+              <polygon points="635,140 690,160 635,180 580,160"/>
+              <polygon points="475,310 535,330 475,350 415,330"/>
+              <polygon points="125,408 180,430 125,452 70,430"/>
+              <polygon points="285,405 345,430 285,455 225,430"/>
+              <polygon points="291,411 333,430 291,449 249,430" fill="#1b0d09" stroke="#c0392b" stroke-width=".8"/>
+            </g>
+            <g font-family="ui-monospace, monospace" font-size="9" fill="#efe7e0" text-anchor="middle">
+              <text x="300" y="195">WORKS_FOR</text><text x="470" y="178">MANAGES</text><text x="635" y="158">CONTROLS</text>
+              <text x="475" y="330">WORKS_ON</text><text x="125" y="431">SUPERVISION</text><text x="285" y="428">DEPENDENTS_OF</text>
+            </g>
+            <g font-family="ui-monospace, monospace" font-size="11" fill="#e06a50">
+              <text x="280" y="232">N</text><text x="380" y="152">1</text><text x="428" y="206">1</text><text x="484" y="132">1</text>
+              <text x="598" y="112">1</text><text x="690" y="222">N</text><text x="296" y="314">M</text><text x="650" y="314">N</text>
+              <text x="156" y="398">1</text><text x="76" y="398">N</text><text x="250" y="400">1</text><text x="350" y="458">N</text>
+            </g>
+            <g font-family="ui-monospace, monospace" font-size="8" fill="#c7a25a">
+              <text x="188" y="434">supervisor</text><text x="62" y="434" text-anchor="end">supervisee</text>
+            </g>
+          </svg>
+          <figcaption>COMPANY ER schema · underline = key · double rectangle/diamond = weak entity/identifying relationship.</figcaption>
+        </div>
+        <p><b>Six relationships:</b> WORKS_FOR (N:1), MANAGES (1:1), CONTROLS (1:N), WORKS_ON (M:N, with Hours), SUPERVISION (recursive 1:N), DEPENDENTS_OF (weak, 1:N).</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>1.9</span><h3>ER → relational schema</h3></div>
+      <div class="card-b">
+        <ul>
+          <li><b>Strong entity</b> → table; choose the key; flatten composite attributes.</li>
+          <li><b>1:N</b> → put the “1” side's key as a foreign key on the “N” side.</li>
+          <li><b>M:N</b> → new table with both keys + relationship attributes; composite PK.</li>
+          <li><b>1:1</b> → foreign key on the total-participation side, with <code>UNIQUE</code>.</li>
+          <li><b>Weak entity</b> → table with owner key + partial key; composite PK.</li>
+          <li><b>Multi-valued attribute</b> → separate table with owner key + value.</li>
+        </ul>
+        <div class="code"><div class="code-h"><span><b>SCHEMA</b> · COMPANY</span></div><pre>EMPLOYEE(SSN, Name, Address, Gender, Salary, SuperSSN, Dno)
+DEPARTMENT(Dno, Dname, MgrSSN, MgrStartDate)
+DLOCATION(Dno, Dloc)
+PROJECT(Pno, Pname, Plocation, Dno)
+WORKS_ON(SSN, Pno, Hours)
+DEPENDENT(Essn, Name, Gender, Bdate, Relationship)</pre></div>
+        <p class="muted"><b>PKs:</b> SSN · Dno · (Dno,Dloc) · Pno · (SSN,Pno) · (Essn,Name). <b>FKs:</b> SuperSSN→EMPLOYEE, Dno→DEPARTMENT, MgrSSN→EMPLOYEE, Essn→EMPLOYEE.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>1.10</span><h3>Query processing steps ★</h3></div>
+      <div class="card-b">
+        <ol>
+          <li><b>User query</b> — SQL entered at an interface.</li>
+          <li><b>Parser</b> — checks syntax and builds a parse tree.</li>
+          <li><b>Translator</b> — converts SQL to relational algebra.</li>
+          <li><b>Optimiser</b> — picks the lowest-cost execution plan (index scan vs full scan).</li>
+          <li><b>Execution engine</b> — runs the plan.</li>
+          <li><b>Storage manager</b> — file manager, buffer manager, index manager fetch data.</li>
+          <li><b>Database</b> — returns the result.</li>
+        </ol>
+        <div class="note"><b>Diagram:</b> SQL → Parser → Translator → Optimiser → Execution → Storage manager → Database.</div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>1.11</span><h3>Other 2-mark answers VTU repeats</h3></div>
+      <div class="card-b">
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>Question</th><th>Short answer</th></tr></thead>
+          <tbody>
+            <tr><td>Data independence</td><td>Change one schema level without changing the level above; logical (conceptual) and physical (internal).</td></tr>
+            <tr><td>DBMS components</td><td>DDL compiler, query parser/optimiser, runtime processor, storage manager (file/buffer/index), catalog.</td></tr>
+            <tr><td>Centralized vs client–server</td><td>All processing at one site vs client UI + DB server (2-tier) or client + application server + DB server (3-tier).</td></tr>
+            <tr><td>OLTP</td><td>Many short concurrent transactions per second; concurrency control + recovery keep them correct.</td></tr>
+            <tr><td>DBMS catalog</td><td>Stores metadata (schema, types, constraints); makes the database self-describing.</td></tr>
+            <tr><td>When not to use a DBMS</td><td>Simple/stable single-user application, strict real-time needs, or unsupported special operations.</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ================= MODULE 4 ================= -->
+<section id="m4">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">04</div><div><h2>Module 4 — SQL</h2><p>Syntax you must write by hand, and the query shapes that repeat.</p></div></div>
+
+    <article class="card">
+      <div class="card-h"><span>4.1</span><h3>SQL command groups &amp; data types</h3></div>
+      <div class="card-b">
+        <div class="two">
+          <div><b>DDL</b><p><code>CREATE</code>, <code>ALTER</code>, <code>DROP</code>, <code>TRUNCATE</code></p></div>
+          <div><b>DML</b><p><code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code></p></div>
+          <div><b>DCL</b><p><code>GRANT</code>, <code>REVOKE</code></p></div>
+          <div><b>TCL</b><p><code>COMMIT</code>, <code>ROLLBACK</code>, <code>SAVEPOINT</code></p></div>
+        </div>
+        <p><b>Types:</b> <code>INT</code>, <code>DECIMAL(p,s)</code>, <code>CHAR(n)</code>, <code>VARCHAR(n)</code>, <code>DATE</code>, <code>TIME</code>, <code>TIMESTAMP</code>, <code>BLOB/CLOB</code>. Oracle: <code>NUMBER</code>, <code>VARCHAR2</code>.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>4.2</span><h3>CREATE TABLE + constraints ★</h3></div>
+      <div class="card-b">
+        <div class="code"><div class="code-h"><span><b>SQL</b> · constraints</span></div><pre>CREATE TABLE EMPLOYEE (
+  SSN       CHAR(9) PRIMARY KEY,
+  Name      VARCHAR(50) NOT NULL,
+  Gender    CHAR(1) CHECK (Gender IN ('M','F')),
+  Salary    DECIMAL(10,2) CHECK (Salary &gt;= 0),
+  SuperSSN  CHAR(9),
+  Dno       INT NOT NULL,
+  CONSTRAINT fk_super FOREIGN KEY (SuperSSN) REFERENCES EMPLOYEE(SSN),
+  CONSTRAINT fk_dept  FOREIGN KEY (Dno) REFERENCES DEPARTMENT(Dno)
+);</pre></div>
+        <ul>
+          <li><b>PRIMARY KEY</b> = unique + NOT NULL; one per table.</li>
+          <li><b>FOREIGN KEY</b> = value must exist in the parent key (or be NULL).</li>
+          <li><b>UNIQUE</b> = no duplicates; NULLs may be allowed.</li>
+          <li><b>CHECK</b> = row-level condition; cannot query other tables.</li>
+          <li><b>ON DELETE CASCADE / SET NULL / RESTRICT</b> = what happens to child rows.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>4.3</span><h3>ALTER, DROP, TRUNCATE</h3></div>
+      <div class="card-b">
+        <div class="code"><div class="code-h"><span><b>SQL</b> · schema changes</span></div><pre>ALTER TABLE EMPLOYEE ADD Email VARCHAR(100);
+ALTER TABLE EMPLOYEE RENAME COLUMN Address TO Addr;  -- Oracle
+ALTER TABLE EMPLOYEE DROP COLUMN Email;
+
+DROP TABLE EMPLOYEE;          -- removes table + data
+TRUNCATE TABLE EMPLOYEE;      -- removes all rows, keeps table</pre></div>
+        <p><b>DELETE</b> = DML, can roll back, fires row triggers. <b>TRUNCATE</b> = DDL, fast, usually no rollback. <b>DROP</b> = removes the table definition.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>4.4</span><h3>INSERT / UPDATE / DELETE</h3></div>
+      <div class="card-b">
+        <div class="code"><div class="code-h"><span><b>SQL</b> · DML</span></div><pre>INSERT INTO EMPLOYEE (SSN, Name, Salary, Dno)
+VALUES ('111111111', 'Priya', 31000, 5);
+
+UPDATE EMPLOYEE
+SET Salary = Salary * 1.10
+WHERE Dno = 5;
+
+DELETE FROM EMPLOYEE
+WHERE SSN = '111111111';</pre></div>
+        <p>Omitted columns get <code>DEFAULT</code> or <code>NULL</code>. Missing <code>WHERE</code> changes every row.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>4.5</span><h3>SELECT — order of writing vs order of evaluation ★</h3></div>
+      <div class="card-b">
+        <div class="code"><div class="code-h"><span><b>SQL</b> · skeleton</span></div><pre>SELECT   [DISTINCT] columns
+FROM     tables
+[WHERE   row_condition]
+[GROUP BY columns]
+[HAVING  group_condition]
+[ORDER BY columns [ASC|DESC]]
+[LIMIT n];</pre></div>
+        <p><b>Evaluation order:</b> FROM → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT.</p>
+        <p>That is why an alias cannot be used in <code>WHERE</code>, and aggregates go in <code>HAVING</code>.</p>
+        <div class="code"><div class="code-h"><span><b>SQL</b> · filters</span></div><pre>SELECT Name, Salary
+FROM EMPLOYEE
+WHERE Dno = 5
+  AND Salary BETWEEN 30000 AND 40000
+ORDER BY Salary DESC;</pre></div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>4.6</span><h3>Aggregates, GROUP BY, HAVING ★</h3></div>
+      <div class="card-b">
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>Function</th><th>Returns</th><th>NULL?</th></tr></thead>
+          <tbody>
+            <tr><td><code>COUNT(*)</code></td><td>Rows</td><td>Counts all rows</td></tr>
+            <tr><td><code>COUNT(col)</code></td><td>Non-NULL values</td><td>Ignores NULL</td></tr>
+            <tr><td><code>SUM</code>, <code>AVG</code></td><td>Total / mean</td><td>Ignores NULL</td></tr>
+            <tr><td><code>MIN</code>, <code>MAX</code></td><td>Smallest / largest</td><td>Ignores NULL</td></tr>
+          </tbody>
+        </table></div>
+        <div class="code"><div class="code-h"><span><b>SQL</b> · per department</span></div><pre>SELECT Dno,
+       COUNT(*) AS Employees,
+       AVG(Salary) AS Avg_Salary
+FROM EMPLOYEE
+GROUP BY Dno
+HAVING COUNT(*) &gt; 2;</pre></div>
+        <p><b>WHERE</b> filters rows before grouping; <b>HAVING</b> filters groups after grouping.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>4.7</span><h3>Joins</h3></div>
+      <div class="card-b">
+        <div class="code"><div class="code-h"><span><b>SQL</b> · employee + department + project</span></div><pre>SELECT E.Name, D.Dname, P.Pname, W.Hours
+FROM EMPLOYEE E
+JOIN DEPARTMENT D ON E.Dno = D.Dno
+JOIN WORKS_ON W  ON E.SSN = W.SSN
+JOIN PROJECT P    ON W.Pno = P.Pno
+WHERE P.Pname = 'ProductX';</pre></div>
+        <ul>
+          <li><b>INNER JOIN</b> — only matching rows.</li>
+          <li><b>LEFT JOIN</b> — all left rows; NULLs if no match.</li>
+          <li><b>Self join</b> — same table twice with aliases (employee/supervisor).</li>
+          <li><b>Cartesian product</b> — join condition missing.</li>
+        </ul>
+        <div class="code"><div class="code-h"><span><b>SQL</b> · self join</span></div><pre>SELECT E.Name AS Employee, S.Name AS Supervisor
+FROM EMPLOYEE E
+LEFT JOIN EMPLOYEE S ON E.SuperSSN = S.SSN;</pre></div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>4.8</span><h3>Subqueries &amp; EXISTS ★</h3></div>
+      <div class="card-b">
+        <div class="code"><div class="code-h"><span><b>SQL</b> · above average / no dependents / second highest</span></div><pre>SELECT Name FROM EMPLOYEE
+WHERE Salary &gt; (SELECT AVG(Salary) FROM EMPLOYEE);
+
+SELECT Name FROM EMPLOYEE E
+WHERE NOT EXISTS (
+  SELECT 1 FROM DEPENDENT D WHERE D.Essn = E.SSN
+);
+
+SELECT MAX(Salary) FROM EMPLOYEE
+WHERE Salary &lt; (SELECT MAX(Salary) FROM EMPLOYEE);</pre></div>
+        <p><b>IN</b> compares values; <b>EXISTS</b> tests whether a row exists. Prefer <code>NOT EXISTS</code> over <code>NOT IN</code> when NULLs may appear.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>4.9</span><h3>Views</h3></div>
+      <div class="card-b">
+        <div class="code"><div class="code-h"><span><b>SQL</b> · view</span></div><pre>CREATE VIEW HighEarners AS
+SELECT SSN, Name, Salary, Dno
+FROM EMPLOYEE
+WHERE Salary &gt; 40000;
+
+DROP VIEW HighEarners;</pre></div>
+        <p><b>Benefits:</b> security (hide columns/rows), simplicity, logical data independence, customised presentation. A view on one table with its key can be updatable; <code>DISTINCT</code>, <code>GROUP BY</code> and aggregates make it read-only.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>4.10</span><h3>Assertions ★</h3></div>
+      <div class="card-b">
+        <div class="code"><div class="code-h"><span><b>SQL</b> · manager salary check</span></div><pre>CREATE ASSERTION Manager_Salary_Check
+CHECK (
+  NOT EXISTS (
+    SELECT *
+    FROM EMPLOYEE E, DEPARTMENT D
+    WHERE E.Dno = D.Dno
+      AND D.MgrSSN = E.SuperSSN
+      AND E.Salary &gt;= (
+        SELECT Salary FROM EMPLOYEE WHERE SSN = D.MgrSSN
+      )
+  )
+);</pre></div>
+        <p><b>Meaning:</b> there is no employee supervised by the department manager who earns at least the manager's salary. If no such row exists, the assertion holds.</p>
+        <p class="muted">Standard SQL; Oracle does not support <code>CREATE ASSERTION</code> — use a trigger in practice.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>4.11</span><h3>Triggers ★</h3></div>
+      <div class="card-b">
+        <div class="code"><div class="code-h"><span><b>Oracle PL/SQL</b> · salary audit</span></div><pre>CREATE OR REPLACE TRIGGER salary_audit
+AFTER INSERT OR UPDATE OR DELETE ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+  IF INSERTING THEN
+     DBMS_OUTPUT.PUT_LINE('New Salary: ' || :NEW.Salary);
+  ELSIF UPDATING THEN
+     DBMS_OUTPUT.PUT_LINE('Old Salary: ' || :OLD.Salary);
+     DBMS_OUTPUT.PUT_LINE('New Salary: ' || :NEW.Salary);
+     DBMS_OUTPUT.PUT_LINE('Difference: ' || (:NEW.Salary - :OLD.Salary));
+  ELSIF DELETING THEN
+     DBMS_OUTPUT.PUT_LINE('Deleted Salary: ' || :OLD.Salary);
+  END IF;
+END;
+/</pre></div>
+        <ul>
+          <li><b>Row-level</b> (<code>FOR EACH ROW</code>) fires once per row; <b>statement-level</b> once per statement.</li>
+          <li><code>:OLD</code> = value before; <code>:NEW</code> = value after.</li>
+          <li>INSERT has NEW only; DELETE has OLD only; UPDATE has both.</li>
+          <li>Use for audit, complex constraints, derived values; avoid mutating-table errors.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>4.12</span><h3>Privileges</h3></div>
+      <div class="card-b">
+        <div class="code"><div class="code-h"><span><b>SQL</b> · grant / revoke</span></div><pre>CREATE USER dbms_user IDENTIFIED BY dbms123;
+GRANT ALL PRIVILEGES TO dbms_user;
+GRANT SELECT, INSERT ON EMPLOYEE TO dbms_user;
+REVOKE INSERT ON EMPLOYEE FROM dbms_user;</pre></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ================= COMPANY QUERIES ================= -->
+<section id="queries">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">Q</div><div><h2>COMPANY queries to memorise</h2><p>These cover almost every SQL question in the paper. Learn the pattern, not the exact wording.</p></div></div>
+
+    <article class="query"><h4>1. Employees working on more than 3 projects</h4><div class="code"><pre>SELECT E.SSN, E.Name, COUNT(W.Pno) AS Projects
+FROM EMPLOYEE E
+JOIN WORKS_ON W ON E.SSN = W.SSN
+GROUP BY E.SSN, E.Name
+HAVING COUNT(W.Pno) &gt; 3;</pre></div></article>
+    <article class="query"><h4>2. Employees with no dependents</h4><div class="code"><pre>SELECT Name FROM EMPLOYEE E
+WHERE NOT EXISTS (
+  SELECT 1 FROM DEPENDENT D WHERE D.Essn = E.SSN
+);</pre></div></article>
+    <article class="query"><h4>3. Employees born in the 1950s</h4><div class="code"><pre>SELECT Name FROM EMPLOYEE
+WHERE Bdate LIKE '195%';</pre></div><p>Safer date version: <code>Bdate &gt;= DATE '1950-01-01' AND Bdate &lt; DATE '1960-01-01'</code>.</p></article>
+    <article class="query"><h4>4. Salary total, max, min, average</h4><div class="code"><pre>SELECT SUM(Salary) AS Total, MAX(Salary) AS Max,
+       MIN(Salary) AS Min, AVG(Salary) AS Avg
+FROM EMPLOYEE;</pre></div></article>
+    <article class="query"><h4>5. Projects involving “Smith”</h4><div class="code"><pre>SELECT Pno FROM PROJECT
+WHERE Dno IN (
+  SELECT Dno FROM DEPARTMENT
+  WHERE MgrSSN IN (SELECT SSN FROM EMPLOYEE WHERE Name='Smith')
+)
+OR Pno IN (
+  SELECT Pno FROM WORKS_ON
+  WHERE SSN IN (SELECT SSN FROM EMPLOYEE WHERE Name='Smith')
+);</pre></div></article>
+    <article class="query"><h4>6. Number of employees per department</h4><div class="code"><pre>SELECT Dno, COUNT(*) AS Employees
+FROM EMPLOYEE
+GROUP BY Dno;</pre></div></article>
+    <article class="query"><h4>7. Employees whose address contains “Hyderabad”</h4><div class="code"><pre>SELECT * FROM EMPLOYEE
+WHERE Address LIKE '%Hyderabad%';</pre></div></article>
+    <article class="query"><h4>8. Dept 5 employees earning 30000–40000</h4><div class="code"><pre>SELECT * FROM EMPLOYEE
+WHERE Dno = 5 AND Salary BETWEEN 30000 AND 40000;</pre></div></article>
+    <article class="query"><h4>9. Employee name with department name</h4><div class="code"><pre>SELECT E.Name, D.Dname
+FROM EMPLOYEE E
+JOIN DEPARTMENT D ON E.Dno = D.Dno;</pre></div></article>
+    <article class="query"><h4>10. Employee, project and hours</h4><div class="code"><pre>SELECT E.Name, P.Pname, W.Hours
+FROM EMPLOYEE E
+JOIN WORKS_ON W ON E.SSN = W.SSN
+JOIN PROJECT P ON W.Pno = P.Pno;</pre></div></article>
+    <article class="query"><h4>11. Employees earning above the company average</h4><div class="code"><pre>SELECT Name, Salary FROM EMPLOYEE
+WHERE Salary &gt; (SELECT AVG(Salary) FROM EMPLOYEE);</pre></div></article>
+    <article class="query"><h4>12. Second-highest salary</h4><div class="code"><pre>SELECT MAX(Salary) AS Second_Highest
+FROM EMPLOYEE
+WHERE Salary &lt; (SELECT MAX(Salary) FROM EMPLOYEE);</pre></div></article>
+    <article class="query"><h4>13. Employees with no project</h4><div class="code"><pre>SELECT E.Name FROM EMPLOYEE E
+WHERE NOT EXISTS (
+  SELECT 1 FROM WORKS_ON W WHERE W.SSN = E.SSN
+);</pre></div></article>
+    <article class="query"><h4>14. Department with the highest average salary</h4><div class="code"><pre>SELECT Dno, AVG(Salary) AS Avg_Salary
+FROM EMPLOYEE
+GROUP BY Dno
+HAVING AVG(Salary) &gt;= ALL (
+  SELECT AVG(Salary) FROM EMPLOYEE GROUP BY Dno
+);</pre></div></article>
+    <article class="query"><h4>15. Raise salary by 10% in department 5</h4><div class="code"><pre>UPDATE EMPLOYEE
+SET Salary = Salary * 1.10
+WHERE Dno = 5;</pre></div></article>
+
+    <div class="note"><b>Query pattern:</b> “more than N” → JOIN + GROUP BY + HAVING · “none” → NOT EXISTS · “all” → double NOT EXISTS · “above average” → subquery with AVG · “same as X” → nested IN.</div>
+  </div>
+</section>
+
+<!-- ================= QUESTION BANK ================= -->
+<section id="bank">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">?</div><div><h2>Likely questions</h2><p>Filter, answer aloud, then open. Short answers only.</p></div></div>
+    <div class="qbar">
+      <label for="qf" class="sr">Filter questions</label>
+      <input id="qf" type="search" placeholder="Filter: schema, weak entity, HAVING, trigger…" autocomplete="off">
+      <span id="qc">45</span>
+    </div>
+    <div id="qlist">
+      <div class="qgroup"><h3>2-mark definitions</h3>
+        <details class="q"><summary><span>01</span>Define data, database, DBMS and database system.</summary><div class="a"><p><b>Data:</b> recorded facts with implicit meaning. <b>Database:</b> collection of related data. <b>DBMS:</b> software to define, construct, manipulate and share a database. <b>Database system:</b> DBMS + data (+ applications).</p></div></details>
+        <details class="q"><summary><span>02</span>Differentiate schema and instance.</summary><div class="a"><p>Schema = description of the database (intension); changes rarely. Instance = actual data at a moment (extension); changes on every update. Example: <code>STUDENT(ID, Name, Age)</code> vs the current rows.</p></div></details>
+        <details class="q"><summary><span>03</span>What is metadata?</summary><div class="a"><p>Data about data — the description of structures, types and constraints stored in the DBMS catalog. It makes the database self-describing.</p></div></details>
+        <details class="q"><summary><span>04</span>Differentiate DDL and DML.</summary><div class="a"><p>DDL defines/changes the schema (<code>CREATE</code>, <code>ALTER</code>, <code>DROP</code>). DML manipulates data (<code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>).</p></div></details>
+        <details class="q"><summary><span>05</span>Differentiate logical and physical data independence.</summary><div class="a"><p><b>Logical:</b> change the conceptual schema without changing external views/programs. <b>Physical:</b> change the internal schema without changing the conceptual schema.</p></div></details>
+        <details class="q"><summary><span>06</span>Define entity, attribute and entity set.</summary><div class="a"><p><b>Entity:</b> object in the mini-world. <b>Attribute:</b> property of an entity. <b>Entity set:</b> current collection of entities of one type.</p></div></details>
+        <details class="q"><summary><span>07</span>What is a weak entity?</summary><div class="a"><p>An entity with no key of its own; identified by a partial key plus its owner through an identifying relationship. Example: DEPENDENT, identified by (Essn, Name).</p></div></details>
+        <details class="q"><summary><span>08</span>Differentiate cardinality and participation.</summary><div class="a"><p><b>Cardinality</b> = maximum participation (1:1, 1:N, M:N). <b>Participation</b> = minimum: total (1, double line) or partial (0, single line).</p></div></details>
+        <details class="q"><summary><span>09</span>Differentiate primary key and foreign key.</summary><div class="a"><p>Primary key uniquely identifies a row and cannot be NULL. Foreign key references a primary key in another table (or the same table), enforcing referential integrity.</p></div></details>
+        <details class="q"><summary><span>10</span>Differentiate DELETE, TRUNCATE and DROP.</summary><div class="a"><p><b>DELETE</b> = DML, removes selected rows, can roll back. <b>TRUNCATE</b> = DDL, removes all rows, keeps the table, usually no rollback. <b>DROP</b> = removes the table definition and data.</p></div></details>
+        <details class="q"><summary><span>11</span>Differentiate WHERE and HAVING.</summary><div class="a"><p>WHERE filters rows before grouping and cannot contain aggregates. HAVING filters groups after GROUP BY and usually contains aggregates.</p></div></details>
+        <details class="q"><summary><span>12</span>Differentiate COUNT(*) and COUNT(column).</summary><div class="a"><p><code>COUNT(*)</code> counts all rows. <code>COUNT(col)</code> counts non-NULL values only.</p></div></details>
+      </div>
+
+      <div class="qgroup"><h3>5 / 7-mark questions</h3>
+        <details class="q"><summary><span>13</span>Explain the characteristics of the database approach.</summary><div class="a"><p>Self-describing catalog; program–data independence; data abstraction; multiple views; sharing plus concurrency control and recovery (OLTP).</p></div></details>
+        <details class="q"><summary><span>14</span>Explain the three-schema architecture with a diagram.</summary><div class="a"><p>External (user views), conceptual (whole logical database) and internal (physical storage/indexes) levels, joined by logical and physical mappings. Supports data independence and multiple views.</p></div></details>
+        <details class="q"><summary><span>15</span>Explain the users of a DBMS.</summary><div class="a"><p>Actors on the scene: DBA, database designers, end users (casual, naïve/parametric, sophisticated, stand-alone). Workers behind the scene: DBMS designers, tool developers, operators.</p></div></details>
+        <details class="q"><summary><span>16</span>Draw the COMPANY ER diagram and explain its relationships.</summary><div class="a"><p>EMPLOYEE, DEPARTMENT, PROJECT, weak DEPENDENT. WORKS_FOR N:1, MANAGES 1:1, CONTROLS 1:N, WORKS_ON M:N with Hours, SUPERVISION recursive 1:N, DEPENDENTS_OF identifying relationship.</p></div></details>
+        <details class="q"><summary><span>17</span>Explain weak entity types with the DEPENDENT example.</summary><div class="a"><p>DEPENDENT has no key of its own. Partial key Name + owner Essn identifies it. Double rectangle, double diamond and dashed underline are the notation. Relational key is (Essn, Name).</p></div></details>
+        <details class="q"><summary><span>18</span>Explain ER-to-relational mapping.</summary><div class="a"><p>Strong entity → table; 1:N → FK on N side; M:N → new table with both keys + attributes; weak entity → owner key + partial key; multi-valued attribute → separate table.</p></div></details>
+        <details class="q"><summary><span>19</span>Explain the steps in query processing.</summary><div class="a"><p>SQL → parser → translator (relational algebra) → optimiser → execution engine → storage manager (file/buffer/index) → database.</p></div></details>
+        <details class="q"><summary><span>20</span>Explain the types of joins.</summary><div class="a"><p>Inner/equi, theta, natural, cross, left/right/full outer, and self join. Inner returns matches; outer keeps unmatched rows with NULLs.</p></div></details>
+        <details class="q"><summary><span>21</span>What is a view? State its advantages.</summary><div class="a"><p>A stored query / virtual table. Advantages: security, simplicity, logical data independence, customised presentation.</p></div></details>
+        <details class="q"><summary><span>22</span>Explain triggers and their parts.</summary><div class="a"><p>Fires on INSERT/UPDATE/DELETE; BEFORE/AFTER/INSTEAD OF; row or statement level; optional WHEN; uses OLD/NEW. Used for audit, complex constraints and derived values.</p></div></details>
+      </div>
+
+      <div class="qgroup"><h3>SQL writing</h3>
+        <details class="q"><summary><span>23</span>Employees working on more than three projects.</summary><div class="a"><pre>SELECT E.SSN, E.Name
+FROM EMPLOYEE E JOIN WORKS_ON W ON E.SSN=W.SSN
+GROUP BY E.SSN, E.Name
+HAVING COUNT(W.Pno) &gt; 3;</pre></div></details>
+        <details class="q"><summary><span>24</span>Employees with no dependents.</summary><div class="a"><pre>SELECT Name FROM EMPLOYEE E
+WHERE NOT EXISTS (
+  SELECT 1 FROM DEPENDENT D WHERE D.Essn=E.SSN
+);</pre></div></details>
+        <details class="q"><summary><span>25</span>Employees born in the 1950s.</summary><div class="a"><pre>SELECT Name FROM EMPLOYEE
+WHERE Bdate LIKE '195%';</pre></div></details>
+        <details class="q"><summary><span>26</span>Total, max, min and average salary.</summary><div class="a"><pre>SELECT SUM(Salary), MAX(Salary), MIN(Salary), AVG(Salary)
+FROM EMPLOYEE;</pre></div></details>
+        <details class="q"><summary><span>27</span>Projects involving Smith.</summary><div class="a"><pre>SELECT Pno FROM PROJECT
+WHERE Dno IN (
+  SELECT Dno FROM DEPARTMENT
+  WHERE MgrSSN IN (SELECT SSN FROM EMPLOYEE WHERE Name='Smith')
+)
+OR Pno IN (
+  SELECT Pno FROM WORKS_ON
+  WHERE SSN IN (SELECT SSN FROM EMPLOYEE WHERE Name='Smith')
+);</pre></div></details>
+        <details class="q"><summary><span>28</span>Number of employees per department.</summary><div class="a"><pre>SELECT Dno, COUNT(*) FROM EMPLOYEE GROUP BY Dno;</pre></div></details>
+        <details class="q"><summary><span>29</span>Employees in Hyderabad.</summary><div class="a"><pre>SELECT * FROM EMPLOYEE
+WHERE Address LIKE '%Hyderabad%';</pre></div></details>
+        <details class="q"><summary><span>30</span>Dept 5 employees earning 30000–40000.</summary><div class="a"><pre>SELECT * FROM EMPLOYEE
+WHERE Dno=5 AND Salary BETWEEN 30000 AND 40000;</pre></div></details>
+        <details class="q"><summary><span>31</span>Employee name with department name.</summary><div class="a"><pre>SELECT E.Name, D.Dname
+FROM EMPLOYEE E JOIN DEPARTMENT D ON E.Dno=D.Dno;</pre></div></details>
+        <details class="q"><summary><span>32</span>Employee, project and hours.</summary><div class="a"><pre>SELECT E.Name, P.Pname, W.Hours
+FROM EMPLOYEE E
+JOIN WORKS_ON W ON E.SSN=W.SSN
+JOIN PROJECT P ON W.Pno=P.Pno;</pre></div></details>
+        <details class="q"><summary><span>33</span>Employees above the company average salary.</summary><div class="a"><pre>SELECT Name, Salary FROM EMPLOYEE
+WHERE Salary &gt; (SELECT AVG(Salary) FROM EMPLOYEE);</pre></div></details>
+        <details class="q"><summary><span>34</span>Second-highest salary.</summary><div class="a"><pre>SELECT MAX(Salary) FROM EMPLOYEE
+WHERE Salary &lt; (SELECT MAX(Salary) FROM EMPLOYEE);</pre></div></details>
+        <details class="q"><summary><span>35</span>Employees with no project.</summary><div class="a"><pre>SELECT E.Name FROM EMPLOYEE E
+WHERE NOT EXISTS (
+  SELECT 1 FROM WORKS_ON W WHERE W.SSN=E.SSN
+);</pre></div></details>
+        <details class="q"><summary><span>36</span>Department with the highest average salary.</summary><div class="a"><pre>SELECT Dno, AVG(Salary) FROM EMPLOYEE
+GROUP BY Dno
+HAVING AVG(Salary) &gt;= ALL (
+  SELECT AVG(Salary) FROM EMPLOYEE GROUP BY Dno
+);</pre></div></details>
+        <details class="q"><summary><span>37</span>Raise salary by 10% in department 5.</summary><div class="a"><pre>UPDATE EMPLOYEE SET Salary=Salary*1.10 WHERE Dno=5;</pre></div></details>
+      </div>
+
+      <div class="qgroup"><h3>SQL traps / short answers</h3>
+        <details class="q"><summary><span>38</span>Why does NOT IN fail with NULLs?</summary><div class="a"><p>If the subquery returns NULL, <code>x &lt;&gt; NULL</code> is UNKNOWN for every row, so the result is empty. Use <code>NOT EXISTS</code>.</p></div></details>
+        <details class="q"><summary><span>39</span>What does NULL mean? How do you test it?</summary><div class="a"><p>Unknown/not applicable. Use <code>IS NULL</code> / <code>IS NOT NULL</code>; <code>= NULL</code> is UNKNOWN. Aggregates ignore NULL except <code>COUNT(*)</code>.</p></div></details>
+        <details class="q"><summary><span>40</span>Differentiate assertion and trigger.</summary><div class="a"><p>Assertion = schema-level boolean condition, can span tables; standard SQL but poorly supported. Trigger = procedural code fired by an event; widely supported.</p></div></details>
+        <details class="q"><summary><span>41</span>What are :OLD and :NEW?</summary><div class="a"><p>Row values before and after the event. INSERT has NEW only; DELETE has OLD only; UPDATE has both.</p></div></details>
+        <details class="q"><summary><span>42</span>Which views are updatable?</summary><div class="a"><p>Generally a single-table view that includes the key and has no DISTINCT, GROUP BY, aggregate or UNION.</p></div></details>
+        <details class="q"><summary><span>43</span>What does ON DELETE CASCADE do?</summary><div class="a"><p>Deletes child rows automatically when the parent row is deleted. Example: deleting an employee deletes their dependents.</p></div></details>
+        <details class="q"><summary><span>44</span>State the GROUP BY rule.</summary><div class="a"><p>Every SELECT expression must be an aggregate or a GROUP BY column. WHERE filters rows; HAVING filters groups.</p></div></details>
+        <details class="q"><summary><span>45</span>Differentiate correlated and uncorrelated subqueries.</summary><div class="a"><p>Uncorrelated: independent, evaluated once. Correlated: references the outer row and is evaluated per outer row (e.g. department average).</p></div></details>
+      </div>
+    </div>
+    <div class="qempty" id="qempty" hidden>No question matches that filter.</div>
+  </div>
+</section>
+
+<!-- ================= PAPER ================= -->
+<section id="paper">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">P</div><div><h2>Solved CIE-I paper</h2><p>The paper you shared, with the answers written the way you should reproduce them.</p></div></div>
+    <div class="paper">
+      <div class="paper-h"><div><h3>Scheme &amp; Solutions — CIE-I</h3><p class="muted" style="font-size:.78rem">BCS403 · Database Management System · IV Semester</p></div><p>Date: 17.04.2026<br>CIE-I · 40 marks<br>8 questions × 10</p></div>
+
+      <div class="pq"><h4>Q1 · Characteristics of the database approach <span>10 M</span></h4>
+        <p>The five characteristics:</p>
+        <ol>
+          <li><b>Self-describing:</b> catalog stores metadata; DBMS works with different databases.</li>
+          <li><b>Program–data independence:</b> change structure/storage without rewriting programs.</li>
+          <li><b>Data abstraction:</b> data model hides physical storage.</li>
+          <li><b>Multiple views:</b> each user sees only relevant data.</li>
+          <li><b>Sharing + multi-user processing:</b> concurrency control and recovery; supports OLTP.</li>
+        </ol>
+      </div>
+
+      <div class="pq"><h4>Q2 · Schema vs instance <span>10 M</span></h4>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>Schema</th><th>Instance</th></tr></thead>
+          <tbody><tr><td>Description/structure of the database</td><td>Actual data at a moment</td></tr><tr><td>Changes rarely; intension</td><td>Changes every update; extension</td></tr><tr><td>Like a blank form</td><td>Like a filled form</td></tr></tbody>
+        </table></div>
+        <p><b>Example:</b> <code>STUDENT(ID, Name, Age)</code> vs rows (101, Alice, 20), (102, Bob, 22).</p>
+      </div>
+
+      <div class="pq"><h4>Q3 · DDL and DML <span>10 M</span></h4>
+        <p><b>DDL (5):</b> defines structure.</p>
+        <div class="code"><pre>CREATE TABLE Students (ID INT PRIMARY KEY, Name VARCHAR(50));
+ALTER TABLE Students ADD Email VARCHAR(100);
+DROP TABLE Students;</pre></div>
+        <p><b>DML (5):</b> manipulates data.</p>
+        <div class="code"><pre>INSERT INTO Students VALUES (101, 'Alex');
+UPDATE Students SET Name='Alexa' WHERE ID=101;
+DELETE FROM Students WHERE ID=101;</pre></div>
+      </div>
+
+      <div class="pq"><h4>Q4 · Steps in query processing <span>10 M</span></h4>
+        <ol><li>User writes SQL.</li><li>Parser checks syntax; parse tree.</li><li>Translator → relational algebra.</li><li>Optimiser chooses the cheapest plan.</li><li>Execution engine runs the plan.</li><li>Storage manager (file/buffer/index) fetches data from the database.</li></ol>
+        <p><b>Diagram:</b> SQL → Parser → Translator → Optimiser → Execution → Storage Manager → Database.</p>
+      </div>
+
+      <div class="pq"><h4>Q5 · COMPANY queries <span>10 M</span></h4>
+        <p><b>(i) Employees on more than 3 projects:</b></p>
+        <div class="code"><pre>SELECT E.* FROM EMPLOYEE E
+JOIN WORKS_ON W ON E.SSN=W.SSN
+GROUP BY E.SSN, E.Name, E.Address, E.Gender, E.Salary, E.SuperSSN, E.Dno
+HAVING COUNT(W.Pno) &gt; 3;</pre></div>
+        <p><b>(ii) Employees with no dependents:</b></p>
+        <div class="code"><pre>SELECT Name FROM EMPLOYEE E
+WHERE NOT EXISTS (
+  SELECT * FROM DEPENDENT D WHERE E.SSN=D.Essn
+);</pre></div>
+        <p><b>(iii) Born in the 1950s:</b> <code>SELECT Name FROM EMPLOYEE WHERE Bdate LIKE '195%';</code></p>
+        <p><b>(iv) Salary aggregates:</b></p>
+        <div class="code"><pre>SELECT SUM(Salary), MAX(Salary), MIN(Salary), AVG(Salary)
+FROM EMPLOYEE;</pre></div>
+      </div>
+
+      <div class="pq"><h4>Q6 · COMPANY queries II <span>10 M</span></h4>
+        <p><b>(i) Projects involving Smith:</b></p>
+        <div class="code"><pre>SELECT Pno FROM PROJECT
+WHERE Dno IN (
+  SELECT Dno FROM DEPARTMENT
+  WHERE MgrSSN IN (SELECT SSN FROM EMPLOYEE WHERE Name='Smith')
+)
+OR Pno IN (
+  SELECT Pno FROM WORKS_ON
+  WHERE SSN IN (SELECT SSN FROM EMPLOYEE WHERE Name='Smith')
+);</pre></div>
+        <p><b>(ii) Department employee count:</b> <code>SELECT Dno, COUNT(*) FROM EMPLOYEE GROUP BY Dno;</code></p>
+        <p><b>(iii) Hyderabad:</b> <code>SELECT * FROM EMPLOYEE WHERE Address LIKE '%Hyderabad%';</code></p>
+        <p><b>(iv) Dept 5, salary 30000–40000:</b> <code>SELECT * FROM EMPLOYEE WHERE Dno=5 AND Salary BETWEEN 30000 AND 40000;</code></p>
+      </div>
+
+      <div class="pq"><h4>Q7 · Trigger <span>10 M</span></h4>
+        <div class="code"><pre>CREATE OR REPLACE TRIGGER salary_audit
+AFTER INSERT OR UPDATE OR DELETE ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+  IF INSERTING THEN
+     DBMS_OUTPUT.PUT_LINE('New Salary: ' || :NEW.Salary);
+  ELSIF UPDATING THEN
+     DBMS_OUTPUT.PUT_LINE('Old Salary: ' || :OLD.Salary);
+     DBMS_OUTPUT.PUT_LINE('New Salary: ' || :NEW.Salary);
+     DBMS_OUTPUT.PUT_LINE('Difference: ' || (:NEW.Salary - :OLD.Salary));
+  ELSIF DELETING THEN
+     DBMS_OUTPUT.PUT_LINE('Deleted Salary: ' || :OLD.Salary);
+  END IF;
+END;
+/</pre></div>
+        <p><b>Explanation:</b> row-level trigger fires per row; <code>:OLD</code>/<code>:NEW</code> hold before/after values; INSERT uses NEW, DELETE uses OLD, UPDATE uses both.</p>
+      </div>
+
+      <div class="pq"><h4>Q8 · Assertion <span>10 M</span></h4>
+        <div class="code"><pre>CREATE ASSERTION Manager_Salary_Check
+CHECK (NOT EXISTS (
+  SELECT * FROM EMPLOYEE E, DEPARTMENT D
+  WHERE E.Dno=D.Dno AND D.MgrSSN=E.SuperSSN
+    AND E.Salary &gt;= (
+      SELECT Salary FROM EMPLOYEE WHERE SSN=D.MgrSSN
+    )
+));</pre></div>
+        <p><b>Explanation:</b> finds an employee supervised by the department manager who earns at least the manager's salary. If none exists, the assertion holds.</p>
+        <p class="muted">Oracle doesn't support assertions; use a trigger in the lab.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LAB ================= -->
+<section id="lab">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">L</div><div><h2>Lab experiments</h2><p>The two practicals from the handout. Write the statements in this order.</p></div></div>
+
+    <article class="card">
+      <div class="card-h"><span>L1</span><h3>Employee table, user, rollback, constraints, NULL</h3></div>
+      <div class="card-b">
+        <div class="code"><pre>CREATE TABLE Employee (
+  EMPNO NUMBER(4), ENAME VARCHAR2(20), JOB VARCHAR2(15),
+  MANAGER NUMBER(4), NO_OF_YEARS NUMBER(2),
+  SAL NUMBER(10,2), COMMISSION NUMBER(10,2)
+);
+
+CREATE USER dbms_user IDENTIFIED BY dbms123;
+GRANT ALL PRIVILEGES TO dbms_user;
+
+INSERT INTO Employee VALUES (101,'Amit','Clerk',201,2,25000,1000);
+INSERT INTO Employee VALUES (102,'Bina','Analyst',201,3,32000,1500);
+INSERT INTO Employee VALUES (103,'Chetan','Manager',NULL,5,45000,2000);
+SELECT * FROM Employee;
+ROLLBACK;
+SELECT * FROM Employee;  -- rows gone if autocommit off
+
+ALTER TABLE Employee ADD CONSTRAINT pk_emp PRIMARY KEY (EMPNO);
+ALTER TABLE Employee MODIFY ENAME NOT NULL;
+
+INSERT INTO Employee (EMPNO, ENAME, JOB, SAL)
+VALUES (104, NULL, 'Clerk', 20000);  -- ORA-01400</pre></div>
+        <p><b>Viva:</b> rollback removes uncommitted DML; NOT NULL rejects the NULL insert; the primary key rejects duplicate EMPNO.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-h"><span>L2</span><h3>Add column, insert five rows, update job, rename, delete</h3></div>
+      <div class="card-b">
+        <div class="code"><pre>CREATE TABLE Employee (
+  EMPNO NUMBER(4) PRIMARY KEY,
+  ENAME VARCHAR2(20) NOT NULL,
+  JOB VARCHAR2(15), MGR NUMBER(4), SAL NUMBER(10,2)
+);
+
+ALTER TABLE Employee
+  ADD (Commission NUMBER(10,2) DEFAULT 0 CHECK (Commission &gt;= 0));
+
+INSERT INTO Employee VALUES (101,'Amit','Clerk',201,25000,1000);
+INSERT INTO Employee VALUES (102,'Bina','Analyst',201,32000,1500);
+INSERT INTO Employee VALUES (103,'Chetan','Manager',NULL,45000,2000);
+INSERT INTO Employee VALUES (104,'Divya','Analyst',103,36000,1200);
+INSERT INTO Employee VALUES (105,'Esha','Clerk',103,24000,800);
+
+UPDATE Employee SET JOB='Senior Analyst' WHERE EMPNO=102;
+ALTER TABLE Employee RENAME COLUMN JOB TO Designation;
+DELETE FROM Employee WHERE EMPNO=105;</pre></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap"><b>DBMS Exam Guide</b> · VTU BCS403 · Modules 1 &amp; 4 · built from your CIE-I scheme, Elmasri &amp; Navathe Ch 1–3 / 6–7 and the COMPANY schema. Verify lab syntax against your DBMS.</div>
+</footer>
+</main>
+
+<script>
+(function(){
+  var f=document.getElementById('qf'), list=document.getElementById('qlist'), count=document.getElementById('qc'), empty=document.getElementById('qempty');
+  if(!f) return;
+  var cards=Array.prototype.slice.call(list.querySelectorAll('details.q'));
+  cards.forEach(function(d){ d.dataset.text=(d.textContent||'').toLowerCase(); });
+  function apply(){
+    var q=f.value.trim().toLowerCase(), n=0;
+    cards.forEach(function(d){
+      var show=!q||d.dataset.text.indexOf(q)!==-1;
+      d.hidden=!show; if(show)n++;
+    });
+    list.querySelectorAll('.qgroup').forEach(function(g){
+      g.hidden=!g.querySelector('details.q:not([hidden])');
+    });
+    count.textContent=n;
+    if(empty) empty.hidden=n!==0;
+  }
+  f.addEventListener('input',apply);
+  apply();
+  var jump=document.getElementById('jump');
+  if(jump) jump.addEventListener('change',function(){
+    if(this.value){ location.hash=this.value; this.value=''; }
+  });
+})();
+</script>
+</body>
+</html>
