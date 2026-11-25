@@ -5,13 +5,23 @@
   var root = window.SITE_ROOT || "";
   var htmlEl = document.documentElement;
 
-  /* ---- theme ---- */
+  /* ---- theme: matte dark by default, warm light on tap ---- */
   var themeBtn = document.getElementById("theme");
+  function paintThemeButton() {
+    if (!themeBtn) return;
+    var dark = htmlEl.getAttribute("data-theme") === "dark";
+    themeBtn.textContent = dark ? "Light" : "Dark";
+    themeBtn.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
+  }
+  paintThemeButton();
   if (themeBtn) {
     themeBtn.addEventListener("click", function () {
       var next = htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
       htmlEl.setAttribute("data-theme", next);
       try { localStorage.setItem("opencse-theme", next); } catch (e) {}
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute("content", next === "dark" ? "#0c0c0c" : "#f3f1ec");
+      paintThemeButton();
     });
   }
 

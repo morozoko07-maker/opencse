@@ -1,0 +1,44 @@
+{
+  "3": [
+    { "slug": "operating-systems", "title": "Operating Systems", "code": "1BCS304", "credits": 3, "summary": "Processes, scheduling, synchronisation, memory management and file systems." },
+    { "slug": "data-structures", "title": "Data Structures and Applications", "code": "BCS304", "credits": 4, "summary": "Arrays, pointers, stacks, queues and recursion, with worked traces." },
+    { "slug": "oop-cpp", "title": "Object Oriented Programming with C++", "code": "BCS306B", "credits": 3, "summary": "Classes, objects, constructors, dynamic memory and operator overloading." },
+    { "slug": "mathematics-iii", "title": "Mathematics III", "code": "", "credits": 3, "summary": "Linear algebra, numerical methods and transforms for engineers." },
+    { "slug": "ddco", "title": "Digital Design and Computer Organisation", "code": "", "credits": 4, "summary": "Logic gates, combinational and sequential circuits, processor organisation." },
+    { "slug": "oop-java", "title": "Object Oriented Programming with Java", "code": "BCS306A", "credits": 3, "summary": "Java syntax, classes, inheritance, exceptions, collections and threads." },
+    { "slug": "dae", "title": "Data Analytics Essentials", "code": "", "credits": 2, "summary": "Spreadsheet analysis, data cleaning and introductory visualisation." }
+  ],
+  "4": [
+    { "slug": "ada", "title": "Analysis and Design of Algorithms", "code": "BCS401", "credits": 3, "summary": "Asymptotics, divide and conquer, greedy, dynamic programming, backtracking." },
+    { "slug": "microcontrollers", "title": "Microcontrollers", "code": "BCS402", "credits": 4, "summary": "ARM architecture, instruction sets, peripherals and embedded interfacing." },
+    { "slug": "dbms", "title": "Database Management Systems", "code": "BCS403", "credits": 4, "summary": "ER modelling, relational algebra, SQL, normalisation and transactions." },
+    { "slug": "discrete-mathematics", "title": "Discrete Mathematical Structures", "code": "BCS405A", "credits": 3, "summary": "Logic, sets, relations, counting, graphs and algebraic structures." },
+    { "slug": "gis", "title": "Geographic Information Systems", "code": "", "credits": 3, "summary": "Spatial data models, projections, raster and vector analysis, QGIS." },
+    { "slug": "biology-for-engineers", "title": "Biology for Engineers", "code": "", "credits": 2, "summary": "Cell biology, genetics and biomolecules applied to engineering problems." },
+    { "slug": "uhv", "title": "Universal Human Values", "code": "", "credits": 1, "summary": "Values, ethics, harmony in the self, family and society." }
+  ],
+  "5": [
+    { "slug": "artificial-intelligence", "title": "Artificial Intelligence", "code": "", "credits": 3, "summary": "Search, knowledge representation, reasoning and introductory learning." },
+    { "slug": "computer-networks", "title": "Computer Networks", "code": "", "credits": 4, "summary": "Layers, TCP/IP, routing, congestion control and network security basics." },
+    { "slug": "theory-of-computation", "title": "Theory of Computation", "code": "", "credits": 3, "summary": "Finite automata, regular languages, context-free grammars, decidability." },
+    { "slug": "sepm", "title": "Software Engineering and Project Management", "code": "", "credits": 3, "summary": "Life cycles, requirements, design, testing, estimation and team process." },
+    { "slug": "rmipr", "title": "Research Methodology and IPR", "code": "", "credits": 2, "summary": "Problem formulation, literature review, patents, copyright and licensing." },
+    { "slug": "environmental-studies", "title": "Environmental Studies", "code": "", "credits": 1, "summary": "Ecosystems, resources, pollution and sustainability for engineers." }
+  ],
+  "6": [
+    { "slug": "cloud-computing", "title": "Cloud Computing", "code": "", "credits": 3, "summary": "Service and deployment models, virtualisation, containers, elasticity." },
+    { "slug": "compiler-design", "title": "Compiler Design", "code": "", "credits": 3, "summary": "Lexing, parsing, semantic analysis, intermediate code and optimisation." },
+    { "slug": "machine-learning", "title": "Machine Learning", "code": "", "credits": 3, "summary": "Regression, classification, model selection and evaluation." },
+    { "slug": "full-stack-development", "title": "Full Stack Development", "code": "", "credits": 3, "summary": "HTTP, REST APIs, databases, authentication and deployment." },
+    { "slug": "indian-knowledge-system", "title": "Indian Knowledge System", "code": "", "credits": 1, "summary": "Traditional knowledge, mathematics, astronomy and engineering practice." },
+    { "slug": "sustainable-development-goals", "title": "Sustainable Development Goals", "code": "", "credits": 1, "summary": "The 2030 agenda, indicators and engineering responses to each goal." },
+    { "slug": "yoga", "title": "Yoga", "code": "", "credits": 1, "summary": "Postures, breathing, philosophy and the physiology of practice." }
+  ],
+  "7": [
+    { "slug": "natural-language-processing", "title": "Natural Language Processing", "code": "", "credits": 3, "summary": "Tokenisation, embeddings, sequence models and modern transformers." },
+    { "slug": "parallel-computing", "title": "Parallel Computing", "code": "", "credits": 3, "summary": "Shared and distributed memory, threads, OpenMP, MPI, performance." },
+    { "slug": "automotive-technology", "title": "Automotive Technology", "code": "", "credits": 3, "summary": "Vehicle systems, powertrains, electronics and autonomous stacks." },
+    { "slug": "bea", "title": "BEA", "code": "", "credits": 3, "summary": "Full title to be confirmed from the 7th semester handout." },
+    { "slug": "ins", "title": "INS", "code": "", "credits": 3, "summary": "Full title to be confirmed from the 7th semester handout." }
+  ]
+}

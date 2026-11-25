@@ -23,8 +23,15 @@ Built so juniors start further ahead than we did.
 | 3 | Object Oriented Programming with C++ | BCS306B | full Module 1–2 notes, 19 compiled programs |
 | 4 | Database Management Systems | BCS403 | exam guide + schema protocol (HTML) |
 
-More courses, PDFs and slide decks will be added over time. The structure is
-built for that: drop a folder in, rebuild, done.
+More courses, PDFs and slide decks will be added over time. The full Sem 3–7
+syllabus is already scaffolded — 32 course folders with the right names and
+codes — so adding material is just dropping files in and rebuilding.
+
+## Themes
+
+Two themes, no dependencies: **matte black** (default) and **warm paper**.
+The toggle in the header remembers your choice; `?theme=light` or `?theme=dark`
+forces one for a link.
 
 ## How it works
 
@@ -40,6 +47,8 @@ courses/
     dbms/
       resources/     <- PDFs, PPTs, HTML guides -> shown as downloads
 scripts/build.py     <- generator (Python 3.9+, no dependencies)
+scripts/scaffold.py  <- creates a folder per subject from syllabus.json
+syllabus.json        <- the subject list per semester
 assets/              <- stylesheet and client-side JS
 site/                <- generated output (git-ignored)
 ```
@@ -69,11 +78,16 @@ No pip install, no Node, no Hugo. Standard library only, works offline.
 
 ## Add a course
 
+The subject list lives in `syllabus.json`. To scaffold any missing folders:
+
 ```bash
-mkdir -p courses/semester-3/computer-networks/notes
-# create courses/semester-3/computer-networks/README.md with front matter
+python3 scripts/scaffold.py     # safe to re-run; never overwrites a README
 python3 scripts/build.py
 ```
+
+That creates `courses/semester-<n>/<slug>/` with `notes/`, `pyq/`, `labs/` and a
+starter README. To add a subject the file does not list, append it to
+`syllabus.json` and run the two commands again.
 
 Rules:
 

@@ -15,7 +15,9 @@ Thanks for helping. Two ways to contribute: open an issue, or send a pull reques
 ## Adding or improving a course
 
 1. Fork the repo and create a branch: `git checkout -b add-subject-notes`.
-2. Put the course in the right semester folder:
+2. If the subject is new, add it to `syllabus.json` and run
+   `python3 scripts/scaffold.py` to create its folder.
+3. Put the course in the right semester folder:
 
    ```
    courses/semester-3/operating-systems/

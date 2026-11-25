@@ -369,30 +369,32 @@ def discover() -> list[Course]:
 # ---------------------------------------------------------------------------
 
 PAGE = """<!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark" data-type="docs">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>%%TITLE%%</title>
 <meta name="description" content="%%DESC%%">
+<meta name="theme-color" content="#0c0c0c">
 <link rel="icon" href="%%ROOT%%assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="%%ROOT%%assets/style.css">
 <script>
-(function(){try{var t=localStorage.getItem("opencse-theme");if(!t){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();
+(function(){var t=null;try{var m=/[?&]theme=(light|dark)/.exec(location.search);t=m?m[1]:localStorage.getItem("opencse-theme");}catch(e){}document.documentElement.setAttribute("data-theme",t||"dark");})();
 </script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header class="topbar">
   <a class="brand" href="%%ROOT%%index.html"><span class="mark">OC</span><span>OpenCSE</span></a>
   <div class="searchwrap">
     <input id="search" type="search" placeholder="Search courses and notes" autocomplete="off" aria-label="Search">
     <div id="results" class="results" hidden></div>
   </div>
-  <button id="theme" class="iconbtn" aria-label="Toggle colour theme" title="Toggle theme">&#9681;</button>
+  <button id="theme" class="iconbtn" aria-label="Switch colour theme">Dark</button>
 </header>
 <div class="layout">
   <aside class="sidebar">%%SIDEBAR%%</aside>
-  <main class="content">
+  <main class="content" id="main">
 %%BODY%%
   </main>
 </div>
@@ -417,17 +419,20 @@ def sidebar_html(courses: list[Course], active_dir: str | None, root: str) -> st
     for c in courses:
         by_sem.setdefault(c.semester, []).append(c)
 
+    active_sem = active_dir.split("/")[1] if active_dir else None
     parts = ['<nav class="nav">', f'<a class="nav-home" href="{root}index.html">Home</a>']
     parts.append(f'<a class="nav-home" href="{root}courses/index.html">All courses</a>')
     for sem in sorted(by_sem):
-        parts.append(f'<div class="nav-group"><div class="nav-label">{pretty_semester(sem)}</div><ul>')
+        opened = " open" if sem == active_sem else ""
+        parts.append(
+            f'<details class="nav-group"{opened}>'
+            f'<summary class="nav-label">{pretty_semester(sem)}</summary><ul>'
+        )
         for c in sorted(by_sem[sem], key=lambda x: x.title.lower()):
             active = " active" if c.url_dir == active_dir else ""
-            code = c.meta.get("code", "")
-            code_html = f'<span class="nav-code">{html.escape(code)}</span>' if code else ""
             parts.append(
                 f'<li><a class="nav-link{active}" href="{root}{c.url_dir}/index.html">'
-                f'<span>{html.escape(c.title)}</span>{code_html}</a></li>'
+                f'<span>{html.escape(c.title)}</span></a></li>'
             )
             if c.url_dir == active_dir and len(c.docs) > 1:
                 parts.append('<li><ul class="nav-sub">')
@@ -436,7 +441,7 @@ def sidebar_html(courses: list[Course], active_dir: str | None, root: str) -> st
                         f'<li><a href="{root}{d.out_rel}">{html.escape(d.title)}</a></li>'
                     )
                 parts.append("</ul></li>")
-        parts.append("</ul></div>")
+        parts.append("</ul></details>")
     parts.append("</nav>")
     return "\n".join(parts)
 
@@ -504,20 +509,22 @@ def render_index(courses: list[Course]) -> None:
             if c.meta.get("credits"):
                 chips.append(f'<span class="chip">{html.escape(c.meta["credits"])} credits</span>')
             summary = c.meta.get("summary", "")
+            pending = not c.files and len(c.docs) <= 1
+            cls = "card pending" if pending else "card"
+            meta = (
+                "awaiting material"
+                if pending
+                else f"{plural(len(c.docs), 'page')} · {plural(len(c.files), 'file')}"
+            )
             parts.append(
-                f'<a class="card" href="{c.url_dir}/index.html">'
+                f'<a class="{cls}" href="{c.url_dir}/index.html">'
                 f'<h3>{html.escape(c.title)}</h3>'
                 f'<p>{html.escape(summary) if summary else "Notes and resources."}</p>'
                 f'<div class="chips">{"".join(chips)}</div>'
-                f'<div class="card-meta">{plural(len(c.docs), "page")} · {plural(len(c.files), "file")}</div>'
+                f'<div class="card-meta">{meta}</div>'
                 "</a>"
             )
         parts.append("</div></section>")
-
-    roadmap = ROOT / "roadmap.md"
-    if roadmap.exists():
-        _, md = read_front_matter(roadmap.read_text(encoding="utf-8", errors="replace"))
-        parts.append(f'<section class="section prose">{md_to_html(md)}</section>')
 
     page("index.html", SITE_NAME, "\n".join(parts), courses, None)
 
@@ -629,9 +636,10 @@ def render_search_index(courses: list[Course]) -> None:
 
 
 FAVICON = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-<rect width="64" height="64" rx="14" fill="#4f46e5"/>
-<text x="32" y="43" font-family="system-ui,sans-serif" font-size="26" font-weight="700"
- fill="#fff" text-anchor="middle">OC</text></svg>
+<rect width="64" height="64" rx="6" fill="#0c0c0c"/>
+<rect x=".5" y=".5" width="63" height="63" rx="5.5" fill="none" stroke="#3a3a3a"/>
+<text x="32" y="42" font-family="ui-monospace,Menlo,monospace" font-size="22" font-weight="700"
+ fill="#e9e7e2" text-anchor="middle">OC</text></svg>
 """
 
 
