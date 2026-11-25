@@ -197,11 +197,11 @@ p { margin: 0 0 1em; }
 .hero-index li { border-top: 1px solid var(--border); }
 .hero-index li:last-child { border-bottom: 1px solid var(--border); }
 .hero-index a {
-  display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: baseline;
+  display: grid; grid-template-columns: 46px 1fr auto; gap: 10px; align-items: baseline;
   padding: 9px 2px; text-decoration: none;
 }
 .hero-index a:hover { color: var(--ink); background: var(--accent-dim); }
-.ix-n { font-family: var(--mono); font-size: .66rem; color: var(--muted); }
+.ix-n { font-family: var(--mono); font-size: .66rem; color: var(--muted); white-space: nowrap; }
 .ix-t { font-family: var(--display); font-size: .98rem; letter-spacing: -.01em; }
 .ix-c { font-family: var(--mono); font-size: .62rem; color: var(--muted); white-space: nowrap; }
 .index-note {
@@ -240,8 +240,7 @@ p { margin: 0 0 1em; }
 .card-meta { font-family: var(--mono); font-size: .6rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .card-go { font-size: .9rem; color: var(--muted); transition: transform .16s ease, color .16s ease; }
 .card:hover .card-go { color: var(--accent); transform: translateX(3px); }
-.card.pending { background: transparent; border-style: dashed; }
-.card.pending h3 { color: var(--muted); }
+.card.pending { background: transparent; border-style: dashed; }.card.pending h3 { color: var(--muted); }
 .card.pending .card-code { color: var(--muted); }
 
 /* ---------- prose ---------- */
@@ -363,4 +362,13 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   .cards { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
   .hero-actions { flex-wrap: wrap; gap: 14px; }
+}
+
+/* first-year cycle chips */
+.sem-note { margin: 14px 0 0; max-width: 64ch; font-size: .86rem; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; margin: 12px 0 0; }
+.chip {
+  padding: 2px 6px; border: 1px solid var(--border); border-radius: 3px;
+  font-family: var(--mono); font-size: .56rem; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--muted);
 }

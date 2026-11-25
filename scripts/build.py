@@ -48,8 +48,16 @@ def human_size(num: int) -> str:
 
 
 def pretty_semester(name: str) -> str:
+    if name == "first-year":
+        return "First year"
     m = re.search(r"(\d+)", name)
     return f"Semester {m.group(1)}" if m else name.replace("-", " ").title()
+
+
+def sem_code(name: str) -> str:
+    if name == "first-year":
+        return "01–02"
+    return name.split("-")[-1].zfill(2)
 
 
 def read_front_matter(text: str) -> tuple[dict[str, str], str]:
@@ -515,7 +523,7 @@ def render_index(courses: list[Course]) -> None:
         '<div class="hero-copy">',
         '<p class="eyebrow">Unofficial · student-run</p>',
         '<h1>Notes for the<br>CSE syllabus.</h1>',
-        '<p class="lede">Every subject from semester 1 to 7, in one place: written '
+        '<p class="lede">Every subject from first year to semester 7, in one place: written '
         "summaries, previous year papers and lab work, organised so the next batch "
         "starts further ahead than we did.</p>",
         '<div class="hero-actions">'
@@ -530,7 +538,7 @@ def render_index(courses: list[Course]) -> None:
     for sem in sorted(by_sem):
         n = len(by_sem[sem])
         parts.append(
-            f'<li><a href="#{sem}"><span class="ix-n">{sem.split("-")[-1].zfill(2)}</span>'
+            f'<li><a href="#{sem}"><span class="ix-n">{sem_code(sem)}</span>'
             f'<span class="ix-t">{pretty_semester(sem)}</span>'
             f'<span class="ix-c">{plural(n, "course")}</span></a></li>'
         )
@@ -547,14 +555,22 @@ def render_index(courses: list[Course]) -> None:
         n = len(by_sem[sem])
         parts.append(
             f'<section class="sem-block" id="{sem}">'
-            f'<div class="sem-head"><h2><span class="num">{sem.split("-")[-1].zfill(2)}</span>'
+            f'<div class="sem-head"><h2><span class="num">{sem_code(sem)}</span>'
             f'{pretty_semester(sem)}</h2><span class="count">{plural(n, "course")}</span></div>'
             '<div class="cards">'
         )
-        for i, c in enumerate(sorted(by_sem[sem], key=lambda x: x.title.lower()), 1):
+        if sem == "first-year":
+            parts[-1] = parts[-1].replace(
+                '<div class="cards">',
+                '<p class="sem-note">First year runs two cycles. Both subject sets are '
+                'listed here; you take one cycle each semester.</p><div class="cards">',
+            )
+        for i, c in enumerate(sorted(by_sem[sem], key=lambda x: ({"Physics": 0, "Chemistry": 1}.get(x.meta.get("cycle", ""), 0), x.title.lower())), 1):
             chips = []
+            if c.meta.get("cycle"):
+                chips.append(f'<span class="chip">{html.escape(c.meta["cycle"])} cycle</span>')
             if c.meta.get("credits"):
-                chips.append(f'<span class="chip">{html.escape(c.meta["credits"])} credits</span>')
+                chips.append(f'<span class="chip">{html.escape(c.meta["credits"])} credit{"s" if c.meta["credits"] != "1" else ""}</span>')
             summary = c.meta.get("summary", "")
             pending = not c.files and len(c.docs) <= 1
             cls = "card pending" if pending else "card"
@@ -569,6 +585,7 @@ def render_index(courses: list[Course]) -> None:
                 f'<span class="card-code">{html.escape(c.meta.get("code", "—"))}</span></div>'
                 f'<h3>{html.escape(c.title)}</h3>'
                 f'<p>{html.escape(summary) if summary else "Notes and resources."}</p>'
+                f'<div class="chips">{"".join(chips)}</div>'
                 f'<div class="card-foot"><span class="card-meta">{meta}</span>'
                 f'<span class="card-go">{"" if pending else "→"}</span></div>'
                 "</a>"

@@ -1,64 +1,366 @@
 {
-  "1": [
-    { "slug": "mathematics-i", "title": "Mathematics for CSE Stream I", "code": "22MATS11", "credits": 0, "summary": "Calculus, linear algebra and numerical methods for first-semester CSE." },
-    { "slug": "engineering-physics", "title": "Engineering Physics", "code": "", "credits": 0, "summary": "Oscillations, optics, lasers, quantum mechanics and material science." },
-    { "slug": "principles-of-programming", "title": "Principles of Programming using C", "code": "22POP13", "credits": 0, "summary": "C syntax, control flow, functions, arrays, pointers and file handling." },
-    { "slug": "introduction-to-iot", "title": "Introduction to Internet of Things", "code": "22ETC15", "credits": 0, "summary": "Sensors, actuators, embedded boards, protocols and IoT case studies." },
-    { "slug": "engineering-english", "title": "English", "code": "22ENG16", "credits": 0, "summary": "Technical reading, writing, listening and speaking for engineers." },
-    { "slug": "introduction-to-design-thinking", "title": "Introduction to Design Thinking", "code": "", "credits": 0, "summary": "Empathy, problem framing, ideation, prototyping and testing." },
-    { "slug": "kannada", "title": "Kannada", "code": "", "credits": 0, "summary": "Kannada language and communication for daily and professional use." },
-    { "slug": "elements-of-mechanical-engineering", "title": "Elements of Mechanical Engineering", "code": "", "credits": 0, "summary": "Thermodynamics, energy conversion, machine elements and manufacturing basics." }
-  ],
-  "2": [
-    { "slug": "mathematics-ii", "title": "Mathematics for CSE Stream II", "code": "BMATS201", "credits": 4, "summary": "Differential equations, transforms, vector calculus and statistics." },
-    { "slug": "engineering-chemistry", "title": "Chemistry for CSE Stream", "code": "BCHES202", "credits": 4, "summary": "Electrochemistry, polymers, corrosion, fuels and materials science." },
-    { "slug": "computer-aided-engineering-drawing", "title": "Computer-Aided Engineering Drawing", "code": "BCEDK203", "credits": 3, "summary": "Projection, sections, isometric views and CAD drawing practice." },
-    { "slug": "basic-electronics", "title": "Introduction to Electronics Engineering", "code": "BESCK204C", "credits": 3, "summary": "Diodes, transistors, op-amps, digital logic and communication basics." },
-    { "slug": "programming-in-cpp", "title": "Introduction to C++ Programming", "code": "BPLCK205D", "credits": 3, "summary": "C++ basics, classes, inheritance, polymorphism and file streams." },
-    { "slug": "professional-writing-skills", "title": "Professional Writing Skills in English", "code": "BPWSK206", "credits": 1, "summary": "Email, reports, memoranda, blogs and interview communication." },
-    { "slug": "indian-constitution", "title": "Indian Constitution", "code": "BICOK207", "credits": 1, "summary": "Constitutional history, fundamental rights, duties and governance." },
-    { "slug": "scientific-foundations-of-health", "title": "Scientific Foundations of Health", "code": "BSFHK258", "credits": 1, "summary": "Nutrition, fitness, mental health, hygiene and first aid." }
+  "first-year": [
+    {
+      "slug": "mathematics-i",
+      "title": "Mathematics for CSE Stream I",
+      "code": "22MATS11",
+      "credits": 0,
+      "summary": "Calculus, linear algebra and numerical methods for first-semester CSE.",
+      "cycle": "Physics"
+    },
+    {
+      "slug": "engineering-physics",
+      "title": "Engineering Physics",
+      "code": "",
+      "credits": 0,
+      "summary": "Oscillations, optics, lasers, quantum mechanics and material science.",
+      "cycle": "Physics"
+    },
+    {
+      "slug": "principles-of-programming",
+      "title": "Principles of Programming using C",
+      "code": "22POP13",
+      "credits": 0,
+      "summary": "C syntax, control flow, functions, arrays, pointers and file handling.",
+      "cycle": "Physics"
+    },
+    {
+      "slug": "introduction-to-iot",
+      "title": "Introduction to Internet of Things",
+      "code": "22ETC15",
+      "credits": 0,
+      "summary": "Sensors, actuators, embedded boards, protocols and IoT case studies.",
+      "cycle": "Physics"
+    },
+    {
+      "slug": "engineering-english",
+      "title": "English",
+      "code": "22ENG16",
+      "credits": 0,
+      "summary": "Technical reading, writing, listening and speaking for engineers.",
+      "cycle": "Physics"
+    },
+    {
+      "slug": "introduction-to-design-thinking",
+      "title": "Introduction to Design Thinking",
+      "code": "",
+      "credits": 0,
+      "summary": "Empathy, problem framing, ideation, prototyping and testing.",
+      "cycle": "Physics"
+    },
+    {
+      "slug": "kannada",
+      "title": "Kannada",
+      "code": "",
+      "credits": 0,
+      "summary": "Kannada language and communication for daily and professional use.",
+      "cycle": "Physics"
+    },
+    {
+      "slug": "elements-of-mechanical-engineering",
+      "title": "Elements of Mechanical Engineering",
+      "code": "",
+      "credits": 0,
+      "summary": "Thermodynamics, energy conversion, machine elements and manufacturing basics.",
+      "cycle": "Physics"
+    },
+    {
+      "slug": "mathematics-ii",
+      "title": "Mathematics for CSE Stream II",
+      "code": "BMATS201",
+      "credits": 4,
+      "summary": "Differential equations, transforms, vector calculus and statistics.",
+      "cycle": "Chemistry"
+    },
+    {
+      "slug": "engineering-chemistry",
+      "title": "Chemistry for CSE Stream",
+      "code": "BCHES202",
+      "credits": 4,
+      "summary": "Electrochemistry, polymers, corrosion, fuels and materials science.",
+      "cycle": "Chemistry"
+    },
+    {
+      "slug": "computer-aided-engineering-drawing",
+      "title": "Computer-Aided Engineering Drawing",
+      "code": "BCEDK203",
+      "credits": 3,
+      "summary": "Projection, sections, isometric views and CAD drawing practice.",
+      "cycle": "Chemistry"
+    },
+    {
+      "slug": "basic-electronics",
+      "title": "Introduction to Electronics Engineering",
+      "code": "BESCK204C",
+      "credits": 3,
+      "summary": "Diodes, transistors, op-amps, digital logic and communication basics.",
+      "cycle": "Chemistry"
+    },
+    {
+      "slug": "programming-in-cpp",
+      "title": "Introduction to C++ Programming",
+      "code": "BPLCK205D",
+      "credits": 3,
+      "summary": "C++ basics, classes, inheritance, polymorphism and file streams.",
+      "cycle": "Chemistry"
+    },
+    {
+      "slug": "professional-writing-skills",
+      "title": "Professional Writing Skills in English",
+      "code": "BPWSK206",
+      "credits": 1,
+      "summary": "Email, reports, memoranda, blogs and interview communication.",
+      "cycle": "Chemistry"
+    },
+    {
+      "slug": "indian-constitution",
+      "title": "Indian Constitution",
+      "code": "BICOK207",
+      "credits": 1,
+      "summary": "Constitutional history, fundamental rights, duties and governance.",
+      "cycle": "Chemistry"
+    },
+    {
+      "slug": "scientific-foundations-of-health",
+      "title": "Scientific Foundations of Health",
+      "code": "BSFHK258",
+      "credits": 1,
+      "summary": "Nutrition, fitness, mental health, hygiene and first aid.",
+      "cycle": "Chemistry"
+    }
   ],
   "3": [
-    { "slug": "operating-systems", "title": "Operating Systems", "code": "1BCS304", "credits": 3, "summary": "Processes, scheduling, synchronisation, memory management and file systems." },
-    { "slug": "data-structures", "title": "Data Structures and Applications", "code": "BCS304", "credits": 4, "summary": "Arrays, pointers, stacks, queues and recursion, with worked traces." },
-    { "slug": "oop-cpp", "title": "Object Oriented Programming with C++", "code": "BCS306B", "credits": 3, "summary": "Classes, objects, constructors, dynamic memory and operator overloading." },
-    { "slug": "mathematics-iii", "title": "Mathematics III", "code": "", "credits": 3, "summary": "Linear algebra, numerical methods and transforms for engineers." },
-    { "slug": "ddco", "title": "Digital Design and Computer Organisation", "code": "", "credits": 4, "summary": "Logic gates, combinational and sequential circuits, processor organisation." },
-    { "slug": "oop-java", "title": "Object Oriented Programming with Java", "code": "BCS306A", "credits": 3, "summary": "Java syntax, classes, inheritance, exceptions, collections and threads." },
-    { "slug": "dae", "title": "Data Analytics Essentials", "code": "", "credits": 2, "summary": "Spreadsheet analysis, data cleaning and introductory visualisation." }
+    {
+      "slug": "operating-systems",
+      "title": "Operating Systems",
+      "code": "1BCS304",
+      "credits": 3,
+      "summary": "Processes, scheduling, synchronisation, memory management and file systems."
+    },
+    {
+      "slug": "data-structures",
+      "title": "Data Structures and Applications",
+      "code": "BCS304",
+      "credits": 4,
+      "summary": "Arrays, pointers, stacks, queues and recursion, with worked traces."
+    },
+    {
+      "slug": "oop-cpp",
+      "title": "Object Oriented Programming with C++",
+      "code": "BCS306B",
+      "credits": 3,
+      "summary": "Classes, objects, constructors, dynamic memory and operator overloading."
+    },
+    {
+      "slug": "mathematics-iii",
+      "title": "Mathematics III",
+      "code": "",
+      "credits": 3,
+      "summary": "Linear algebra, numerical methods and transforms for engineers."
+    },
+    {
+      "slug": "ddco",
+      "title": "Digital Design and Computer Organisation",
+      "code": "",
+      "credits": 4,
+      "summary": "Logic gates, combinational and sequential circuits, processor organisation."
+    },
+    {
+      "slug": "oop-java",
+      "title": "Object Oriented Programming with Java",
+      "code": "BCS306A",
+      "credits": 3,
+      "summary": "Java syntax, classes, inheritance, exceptions, collections and threads."
+    },
+    {
+      "slug": "dae",
+      "title": "Data Analytics Essentials",
+      "code": "",
+      "credits": 2,
+      "summary": "Spreadsheet analysis, data cleaning and introductory visualisation."
+    }
   ],
   "4": [
-    { "slug": "ada", "title": "Analysis and Design of Algorithms", "code": "BCS401", "credits": 3, "summary": "Asymptotics, divide and conquer, greedy, dynamic programming, backtracking." },
-    { "slug": "microcontrollers", "title": "Microcontrollers", "code": "BCS402", "credits": 4, "summary": "ARM architecture, instruction sets, peripherals and embedded interfacing." },
-    { "slug": "dbms", "title": "Database Management Systems", "code": "BCS403", "credits": 4, "summary": "ER modelling, relational algebra, SQL, normalisation and transactions." },
-    { "slug": "discrete-mathematics", "title": "Discrete Mathematical Structures", "code": "BCS405A", "credits": 3, "summary": "Logic, sets, relations, counting, graphs and algebraic structures." },
-    { "slug": "gis", "title": "Geographic Information Systems", "code": "", "credits": 3, "summary": "Spatial data models, projections, raster and vector analysis, QGIS." },
-    { "slug": "biology-for-engineers", "title": "Biology for Engineers", "code": "", "credits": 2, "summary": "Cell biology, genetics and biomolecules applied to engineering problems." },
-    { "slug": "uhv", "title": "Universal Human Values", "code": "", "credits": 1, "summary": "Values, ethics, harmony in the self, family and society." }
+    {
+      "slug": "ada",
+      "title": "Analysis and Design of Algorithms",
+      "code": "BCS401",
+      "credits": 3,
+      "summary": "Asymptotics, divide and conquer, greedy, dynamic programming, backtracking."
+    },
+    {
+      "slug": "microcontrollers",
+      "title": "Microcontrollers",
+      "code": "BCS402",
+      "credits": 4,
+      "summary": "ARM architecture, instruction sets, peripherals and embedded interfacing."
+    },
+    {
+      "slug": "dbms",
+      "title": "Database Management Systems",
+      "code": "BCS403",
+      "credits": 4,
+      "summary": "ER modelling, relational algebra, SQL, normalisation and transactions."
+    },
+    {
+      "slug": "discrete-mathematics",
+      "title": "Discrete Mathematical Structures",
+      "code": "BCS405A",
+      "credits": 3,
+      "summary": "Logic, sets, relations, counting, graphs and algebraic structures."
+    },
+    {
+      "slug": "gis",
+      "title": "Geographic Information Systems",
+      "code": "",
+      "credits": 3,
+      "summary": "Spatial data models, projections, raster and vector analysis, QGIS."
+    },
+    {
+      "slug": "biology-for-engineers",
+      "title": "Biology for Engineers",
+      "code": "",
+      "credits": 2,
+      "summary": "Cell biology, genetics and biomolecules applied to engineering problems."
+    },
+    {
+      "slug": "uhv",
+      "title": "Universal Human Values",
+      "code": "",
+      "credits": 1,
+      "summary": "Values, ethics, harmony in the self, family and society."
+    }
   ],
   "5": [
-    { "slug": "artificial-intelligence", "title": "Artificial Intelligence", "code": "", "credits": 3, "summary": "Search, knowledge representation, reasoning and introductory learning." },
-    { "slug": "computer-networks", "title": "Computer Networks", "code": "", "credits": 4, "summary": "Layers, TCP/IP, routing, congestion control and network security basics." },
-    { "slug": "theory-of-computation", "title": "Theory of Computation", "code": "", "credits": 3, "summary": "Finite automata, regular languages, context-free grammars, decidability." },
-    { "slug": "sepm", "title": "Software Engineering and Project Management", "code": "", "credits": 3, "summary": "Life cycles, requirements, design, testing, estimation and team process." },
-    { "slug": "rmipr", "title": "Research Methodology and IPR", "code": "", "credits": 2, "summary": "Problem formulation, literature review, patents, copyright and licensing." },
-    { "slug": "environmental-studies", "title": "Environmental Studies", "code": "", "credits": 1, "summary": "Ecosystems, resources, pollution and sustainability for engineers." }
+    {
+      "slug": "artificial-intelligence",
+      "title": "Artificial Intelligence",
+      "code": "",
+      "credits": 3,
+      "summary": "Search, knowledge representation, reasoning and introductory learning."
+    },
+    {
+      "slug": "computer-networks",
+      "title": "Computer Networks",
+      "code": "",
+      "credits": 4,
+      "summary": "Layers, TCP/IP, routing, congestion control and network security basics."
+    },
+    {
+      "slug": "theory-of-computation",
+      "title": "Theory of Computation",
+      "code": "",
+      "credits": 3,
+      "summary": "Finite automata, regular languages, context-free grammars, decidability."
+    },
+    {
+      "slug": "sepm",
+      "title": "Software Engineering and Project Management",
+      "code": "",
+      "credits": 3,
+      "summary": "Life cycles, requirements, design, testing, estimation and team process."
+    },
+    {
+      "slug": "rmipr",
+      "title": "Research Methodology and IPR",
+      "code": "",
+      "credits": 2,
+      "summary": "Problem formulation, literature review, patents, copyright and licensing."
+    },
+    {
+      "slug": "environmental-studies",
+      "title": "Environmental Studies",
+      "code": "",
+      "credits": 1,
+      "summary": "Ecosystems, resources, pollution and sustainability for engineers."
+    }
   ],
   "6": [
-    { "slug": "cloud-computing", "title": "Cloud Computing", "code": "", "credits": 3, "summary": "Service and deployment models, virtualisation, containers, elasticity." },
-    { "slug": "compiler-design", "title": "Compiler Design", "code": "", "credits": 3, "summary": "Lexing, parsing, semantic analysis, intermediate code and optimisation." },
-    { "slug": "machine-learning", "title": "Machine Learning", "code": "", "credits": 3, "summary": "Regression, classification, model selection and evaluation." },
-    { "slug": "full-stack-development", "title": "Full Stack Development", "code": "", "credits": 3, "summary": "HTTP, REST APIs, databases, authentication and deployment." },
-    { "slug": "indian-knowledge-system", "title": "Indian Knowledge System", "code": "", "credits": 1, "summary": "Traditional knowledge, mathematics, astronomy and engineering practice." },
-    { "slug": "sustainable-development-goals", "title": "Sustainable Development Goals", "code": "", "credits": 1, "summary": "The 2030 agenda, indicators and engineering responses to each goal." },
-    { "slug": "yoga", "title": "Yoga", "code": "", "credits": 1, "summary": "Postures, breathing, philosophy and the physiology of practice." }
+    {
+      "slug": "cloud-computing",
+      "title": "Cloud Computing",
+      "code": "",
+      "credits": 3,
+      "summary": "Service and deployment models, virtualisation, containers, elasticity."
+    },
+    {
+      "slug": "compiler-design",
+      "title": "Compiler Design",
+      "code": "",
+      "credits": 3,
+      "summary": "Lexing, parsing, semantic analysis, intermediate code and optimisation."
+    },
+    {
+      "slug": "machine-learning",
+      "title": "Machine Learning",
+      "code": "",
+      "credits": 3,
+      "summary": "Regression, classification, model selection and evaluation."
+    },
+    {
+      "slug": "full-stack-development",
+      "title": "Full Stack Development",
+      "code": "",
+      "credits": 3,
+      "summary": "HTTP, REST APIs, databases, authentication and deployment."
+    },
+    {
+      "slug": "indian-knowledge-system",
+      "title": "Indian Knowledge System",
+      "code": "",
+      "credits": 1,
+      "summary": "Traditional knowledge, mathematics, astronomy and engineering practice."
+    },
+    {
+      "slug": "sustainable-development-goals",
+      "title": "Sustainable Development Goals",
+      "code": "",
+      "credits": 1,
+      "summary": "The 2030 agenda, indicators and engineering responses to each goal."
+    },
+    {
+      "slug": "yoga",
+      "title": "Yoga",
+      "code": "",
+      "credits": 1,
+      "summary": "Postures, breathing, philosophy and the physiology of practice."
+    }
   ],
   "7": [
-    { "slug": "natural-language-processing", "title": "Natural Language Processing", "code": "", "credits": 3, "summary": "Tokenisation, embeddings, sequence models and modern transformers." },
-    { "slug": "parallel-computing", "title": "Parallel Computing", "code": "", "credits": 3, "summary": "Shared and distributed memory, threads, OpenMP, MPI, performance." },
-    { "slug": "automotive-technology", "title": "Automotive Technology", "code": "", "credits": 3, "summary": "Vehicle systems, powertrains, electronics and autonomous stacks." },
-    { "slug": "bea", "title": "BEA", "code": "", "credits": 3, "summary": "Full title to be confirmed from the 7th semester handout." },
-    { "slug": "ins", "title": "INS", "code": "", "credits": 3, "summary": "Full title to be confirmed from the 7th semester handout." }
+    {
+      "slug": "natural-language-processing",
+      "title": "Natural Language Processing",
+      "code": "",
+      "credits": 3,
+      "summary": "Tokenisation, embeddings, sequence models and modern transformers."
+    },
+    {
+      "slug": "parallel-computing",
+      "title": "Parallel Computing",
+      "code": "",
+      "credits": 3,
+      "summary": "Shared and distributed memory, threads, OpenMP, MPI, performance."
+    },
+    {
+      "slug": "automotive-technology",
+      "title": "Automotive Technology",
+      "code": "",
+      "credits": 3,
+      "summary": "Vehicle systems, powertrains, electronics and autonomous stacks."
+    },
+    {
+      "slug": "bea",
+      "title": "BEA",
+      "code": "",
+      "credits": 3,
+      "summary": "Full title to be confirmed from the 7th semester handout."
+    },
+    {
+      "slug": "ins",
+      "title": "INS",
+      "code": "",
+      "credits": 3,
+      "summary": "Full title to be confirmed from the 7th semester handout."
+    }
   ]
 }
