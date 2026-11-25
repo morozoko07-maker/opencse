@@ -1,4 +1,24 @@
 {
+  "1": [
+    { "slug": "mathematics-i", "title": "Mathematics for CSE Stream I", "code": "22MATS11", "credits": 0, "summary": "Calculus, linear algebra and numerical methods for first-semester CSE." },
+    { "slug": "engineering-physics", "title": "Engineering Physics", "code": "", "credits": 0, "summary": "Oscillations, optics, lasers, quantum mechanics and material science." },
+    { "slug": "principles-of-programming", "title": "Principles of Programming using C", "code": "22POP13", "credits": 0, "summary": "C syntax, control flow, functions, arrays, pointers and file handling." },
+    { "slug": "introduction-to-iot", "title": "Introduction to Internet of Things", "code": "22ETC15", "credits": 0, "summary": "Sensors, actuators, embedded boards, protocols and IoT case studies." },
+    { "slug": "engineering-english", "title": "English", "code": "22ENG16", "credits": 0, "summary": "Technical reading, writing, listening and speaking for engineers." },
+    { "slug": "introduction-to-design-thinking", "title": "Introduction to Design Thinking", "code": "", "credits": 0, "summary": "Empathy, problem framing, ideation, prototyping and testing." },
+    { "slug": "kannada", "title": "Kannada", "code": "", "credits": 0, "summary": "Kannada language and communication for daily and professional use." },
+    { "slug": "elements-of-mechanical-engineering", "title": "Elements of Mechanical Engineering", "code": "", "credits": 0, "summary": "Thermodynamics, energy conversion, machine elements and manufacturing basics." }
+  ],
+  "2": [
+    { "slug": "mathematics-ii", "title": "Mathematics for CSE Stream II", "code": "BMATS201", "credits": 4, "summary": "Differential equations, transforms, vector calculus and statistics." },
+    { "slug": "engineering-chemistry", "title": "Chemistry for CSE Stream", "code": "BCHES202", "credits": 4, "summary": "Electrochemistry, polymers, corrosion, fuels and materials science." },
+    { "slug": "computer-aided-engineering-drawing", "title": "Computer-Aided Engineering Drawing", "code": "BCEDK203", "credits": 3, "summary": "Projection, sections, isometric views and CAD drawing practice." },
+    { "slug": "basic-electronics", "title": "Introduction to Electronics Engineering", "code": "BESCK204C", "credits": 3, "summary": "Diodes, transistors, op-amps, digital logic and communication basics." },
+    { "slug": "programming-in-cpp", "title": "Introduction to C++ Programming", "code": "BPLCK205D", "credits": 3, "summary": "C++ basics, classes, inheritance, polymorphism and file streams." },
+    { "slug": "professional-writing-skills", "title": "Professional Writing Skills in English", "code": "BPWSK206", "credits": 1, "summary": "Email, reports, memoranda, blogs and interview communication." },
+    { "slug": "indian-constitution", "title": "Indian Constitution", "code": "BICOK207", "credits": 1, "summary": "Constitutional history, fundamental rights, duties and governance." },
+    { "slug": "scientific-foundations-of-health", "title": "Scientific Foundations of Health", "code": "BSFHK258", "credits": 1, "summary": "Nutrition, fitness, mental health, hygiene and first aid." }
+  ],
   "3": [
     { "slug": "operating-systems", "title": "Operating Systems", "code": "1BCS304", "credits": 3, "summary": "Processes, scheduling, synchronisation, memory management and file systems." },
     { "slug": "data-structures", "title": "Data Structures and Applications", "code": "BCS304", "credits": 4, "summary": "Arrays, pointers, stacks, queues and recursion, with worked traces." },

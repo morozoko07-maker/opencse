@@ -515,7 +515,7 @@ def render_index(courses: list[Course]) -> None:
         '<div class="hero-copy">',
         '<p class="eyebrow">Unofficial · student-run</p>',
         '<h1>Notes for the<br>CSE syllabus.</h1>',
-        '<p class="lede">Every subject from semester 3 to 7, in one place: written '
+        '<p class="lede">Every subject from semester 1 to 7, in one place: written '
         "summaries, previous year papers and lab work, organised so the next batch "
         "starts further ahead than we did.</p>",
         '<div class="hero-actions">'
