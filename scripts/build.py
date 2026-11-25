@@ -654,16 +654,6 @@ def render_course(course: Course, courses: list[Course]) -> None:
         parts.append(f'<p class="lede">{html.escape(course.meta["summary"])}</p>')
 
     if main_doc:
-        parts.append(f'<article class="prose">{main_doc.body_html}</article>')
-        if len(course.docs) > 1:
-            parts.append('<section class="section"><h2>Study pages</h2><ul class="pagelist">')
-            for d in course.docs[1:]:
-                parts.append(
-                    f'<li><a href="{Path(d.out_rel).name}">{html.escape(d.title)}</a></li>'
-                )
-            parts.append("</ul></section>")
-
-    if main_doc:
         parts.append(toc_html(main_doc.body_html))
 
     if course.files:
@@ -696,7 +686,7 @@ def render_course(course: Course, courses: list[Course]) -> None:
                 ext = Path(rel).suffix.lstrip(".").upper() or "FILE"
                 leaf = rel.rsplit("/", 1)[-1]
                 sub = rel.rsplit("/", 2)[-2] if rel.count("/") >= 2 else ""
-                if sub in ("material",):
+                if sub in ("material",) or sub == name:
                     sub = ""
                 bits = [x for x in (sub, ext, human_size(size)) if x]
                 parts.append('<li><a href="' + root + quote(url) + '">'
@@ -710,6 +700,16 @@ def render_course(course: Course, courses: list[Course]) -> None:
                      "No material yet. Drop files into <code>"
                      + html.escape(course.path.relative_to(ROOT).as_posix())
                      + "</code> and rebuild.</p></section>")
+
+    if main_doc:
+        parts.append(f'<article class="prose">{main_doc.body_html}</article>')
+        if len(course.docs) > 1:
+            parts.append('<section class="section"><h2>Study pages</h2><ul class="pagelist">')
+            for d in course.docs[1:]:
+                parts.append(
+                    f'<li><a href="{Path(d.out_rel).name}">{html.escape(d.title)}</a></li>'
+                )
+            parts.append("</ul></section>")
 
     parts.append(
         '<p class="editnote">Spotted something wrong? '
