@@ -350,15 +350,15 @@
     },
     {
       "slug": "bea",
-      "title": "BEA",
-      "code": "",
+      "title": "Building Enterprise Applications",
+      "code": "BCS703B",
       "credits": 3,
       "summary": "Full title to be confirmed from the 7th semester handout."
     },
     {
       "slug": "ins",
-      "title": "INS",
-      "code": "",
+      "title": "Information and Network Security",
+      "code": "BCS701",
       "credits": 3,
       "summary": "Full title to be confirmed from the 7th semester handout."
     }

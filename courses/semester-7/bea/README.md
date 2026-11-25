@@ -1,14 +1,15 @@
 ---
-title: BEA
+title: Building Enterprise Applications
 semester: 7
+code: "BCS703B"
 credits: 3
-summary: Full title to be confirmed from the 7th semester handout.
+summary: Seventh-semester course, BCS703B.
 ---
 
-# BEA
+# Building Enterprise Applications
 
-Material for this subject has not been written up yet. The folder structure is
-ready — drop notes, question papers or reports in and rebuild.
+Everything collected for this subject is listed below, grouped by folder.
+Written notes become pages; everything else is a download.
 
 ## What belongs here
 

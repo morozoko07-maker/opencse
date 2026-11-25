@@ -24,9 +24,9 @@ Built so juniors start further ahead than we did.
 | 4 | Database Management Systems | BCS403 | exam guide + schema protocol (HTML) |
 
 Each covered subject ends with a **revision sheet** and a **question bank taken from its
-actual model and IA papers**. More courses, PDFs and slide decks will be added over time. The full Sem 3–7
-syllabus is already scaffolded — 32 course folders with the right names and
-codes — so adding material is just dropping files in and rebuilding.
+actual model and IA papers**. The full syllabus is covered: **first year (both cycles) through semester 8, 49 courses**,
+with 1,300+ files of model papers, question banks, notes and lab material. Anything
+still missing is a folder waiting for a drop-in file.
 
 ## Themes
 

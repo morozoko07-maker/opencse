@@ -7,8 +7,8 @@ summary: Spreadsheet analysis, data cleaning and introductory visualisation.
 
 # Data Analytics Essentials
 
-Material for this subject has not been written up yet. The folder structure is
-ready — drop notes, question papers or reports in and rebuild.
+Everything collected for this subject is listed below, grouped by folder.
+Written notes become pages; everything else is a download.
 
 ## What belongs here
 

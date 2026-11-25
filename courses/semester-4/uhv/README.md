@@ -7,8 +7,8 @@ summary: Values, ethics, harmony in the self, family and society.
 
 # Universal Human Values
 
-Material for this subject has not been written up yet. The folder structure is
-ready — drop notes, question papers or reports in and rebuild.
+Everything collected for this subject is listed below, grouped by folder.
+Written notes become pages; everything else is a download.
 
 ## What belongs here
 

@@ -284,6 +284,18 @@ def md_to_html(md: str) -> str:
     return "\n".join(out)
 
 
+
+def toc_html(body: str) -> str:
+    heads = re.findall(r'<h2 id="([^"]+)">(.*?)</h2>', body, flags=re.S)
+    if len(heads) < 4:
+        return ""
+    items = "".join(
+        f'<li><a href="#{hid}">{html.escape(strip_tags(re.sub(r"<a class=\"anchor\".*?</a>", "", h)).strip())}</a></li>'
+        for hid, h in heads
+    )
+    return f'<nav class="toc"><p class="toc-label">On this page</p><ol>{items}</ol></nav>'
+
+
 # ---------------------------------------------------------------------------
 # Content discovery
 # ---------------------------------------------------------------------------
@@ -361,7 +373,7 @@ def discover() -> list[Course]:
                 if note == readme:
                     continue
                 out_name = slugify(note.stem) + ".html"
-                course.docs.append(load_doc(note, f"{base}/{out_name}", note.stem))
+                course.docs.append(load_doc(note, f"{base}/{out_name}", note.stem, strip_title=True))
 
             for f in sorted(cdir.rglob("*")):
                 if not f.is_file() or f.suffix.lower() == ".md":
@@ -651,21 +663,53 @@ def render_course(course: Course, courses: list[Course]) -> None:
                 )
             parts.append("</ul></section>")
 
+    if main_doc:
+        parts.append(toc_html(main_doc.body_html))
+
     if course.files:
-        parts.append('<section class="section"><h2>Downloadable files</h2><div class="tablewrap">')
-        parts.append('<table class="filetable"><thead><tr><th>File</th><th>Type</th><th>Size</th><th></th></tr></thead><tbody>')
-        for rel, size, url in course.files:
-            ext = Path(rel).suffix.lstrip(".").upper() or "—"
-            parts.append(
-                f'<tr><td class="mono">{html.escape(rel)}</td><td>{ext}</td>'
-                f'<td>{human_size(size)}</td>'
-                f'<td><a class="dl" href="{root}{quote(url)}">Download</a></td></tr>'
-            )
-        parts.append("</tbody></table></div></section>")
+        total = sum(item[1] for item in course.files)
+        groups = {}
+        for item in course.files:
+            rel = item[0]
+            if rel.startswith("material/"):
+                parts_ = rel[len("material/"):].split("/")
+                key = parts_[0] if len(parts_) > 1 else "Files"
+            else:
+                key = "Files"
+            groups.setdefault(key, []).append(item)
+        head = ('<section class="section"><h2>Material <span class="section-count">'
+                + plural(len(course.files), "file") + " \u00b7 " + human_size(total)
+                + '</span></h2>')
+        parts.append(head)
+        parts.append('<p class="section-note">Model papers, notes and lab work. '
+                     'Open a folder to browse, or download a single file.</p>')
+        for name in sorted(groups):
+            items = groups[name]
+            gsize = sum(i[1] for i in items)
+            opened = " open" if len(course.files) <= 12 else ""
+            parts.append('<details class="filegroup"' + opened + '><summary>'
+                         '<span class="fg-name">' + html.escape(name) + '</span>'
+                         '<span class="fg-meta">' + plural(len(items), "file") + " \u00b7 "
+                         + human_size(gsize) + '</span></summary>'
+                         '<ul class="filelist">')
+            for rel, size, url in sorted(items):
+                ext = Path(rel).suffix.lstrip(".").upper() or "FILE"
+                leaf = rel.rsplit("/", 1)[-1]
+                sub = rel.rsplit("/", 2)[-2] if rel.count("/") >= 2 else ""
+                if sub in ("material",):
+                    sub = ""
+                bits = [x for x in (sub, ext, human_size(size)) if x]
+                parts.append('<li><a href="' + root + quote(url) + '">'
+                             '<span class="fname">' + html.escape(leaf) + '</span>'
+                             '<span class="fmeta">' + " \u00b7 ".join(bits)
+                             + '</span></a></li>')
+            parts.append("</ul></details>")
+        parts.append("</section>")
     else:
-        parts.append('<p class="empty">No files in this course yet. Add some to <code>'
+        parts.append('<section class="section"><h2>Material</h2><p class="empty">'
+                     "No material yet. Drop files into <code>"
                      + html.escape(course.path.relative_to(ROOT).as_posix())
-                     + "</code> and rebuild.</p>")
+                     + "</code> and rebuild.</p></section>")
 
     parts.append(
         '<p class="editnote">Spotted something wrong? '
@@ -682,6 +726,7 @@ def render_course(course: Course, courses: list[Course]) -> None:
             f'<p class="crumb"><a href="{droot}index.html">Courses</a> / '
             f'<a href="index.html">{html.escape(course.title)}</a></p>'
             f"<h1>{html.escape(d.title)}</h1>"
+            f"{toc_html(d.body_html)}"
             f'<article class="prose">{d.body_html}</article>'
             f'<p class="editnote">Source: <code>{html.escape(d.source.relative_to(ROOT).as_posix())}</code></p>'
         )

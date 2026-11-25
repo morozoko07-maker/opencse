@@ -1,14 +1,15 @@
 ---
-title: INS
+title: Information and Network Security
 semester: 7
+code: "BCS701"
 credits: 3
-summary: Full title to be confirmed from the 7th semester handout.
+summary: Seventh-semester course, BCS701.
 ---
 
-# INS
+# Information and Network Security
 
-Material for this subject has not been written up yet. The folder structure is
-ready — drop notes, question papers or reports in and rebuild.
+Everything collected for this subject is listed below, grouped by folder.
+Written notes become pages; everything else is a download.
 
 ## What belongs here
 

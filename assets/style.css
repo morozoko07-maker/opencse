@@ -407,3 +407,63 @@ html[data-theme="oled"] {
 @media (max-width: 560px) {
   .themebar button { padding: 0 6px; font-size: .54rem; }
 }
+
+/* ---------- readability pass: looser type, grouped material ---------- */
+.prose p, .prose li { font-size: .96rem; line-height: 1.72; }
+.prose p { margin-bottom: 1.15em; }
+.prose li { margin: .45em 0; }
+.prose h2 { margin-top: 2.8em; }
+.prose h3 { margin-top: 2em; }
+.prose blockquote { padding: .35em 0 .35em 1.2em; margin: 1.7em 0; }
+th, td { padding: 11px 12px; }
+.cards { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.card { min-height: 200px; padding: 20px; }
+.card p { font-size: .86rem; line-height: 1.62; }
+.section { margin-top: 56px; }
+
+.toc {
+  margin-top: 26px; padding: 16px 18px;
+  border: 1px solid var(--border); border-radius: var(--r);
+}
+.toc-label {
+  margin: 0 0 10px; font-family: var(--mono); font-size: .58rem;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+}
+.toc ol { margin: 0; padding-left: 1.1em; columns: 2; column-gap: 32px; }
+.toc li { margin: 4px 0; font-size: .84rem; color: var(--muted); }
+.toc a { text-decoration: none; }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 700px) { .toc ol { columns: 1; } }
+
+.section-count {
+  margin-left: 10px; font-family: var(--mono); font-size: .62rem;
+  font-weight: 400; letter-spacing: .06em; color: var(--muted);
+}
+.section-note { margin: 0 0 20px; font-size: .88rem; color: var(--muted); }
+.filegroup { border-top: 1px solid var(--border); }
+.filegroup:last-of-type { border-bottom: 1px solid var(--border); }
+.filegroup summary {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+  padding: 13px 2px; cursor: pointer; list-style: none;
+}
+.filegroup summary::-webkit-details-marker { display: none; }
+.fg-name { font-size: .9rem; font-weight: 500; }
+.fg-name::before { content: "+ "; font-family: var(--mono); color: var(--muted); }
+.filegroup[open] .fg-name::before { content: "– "; }
+.fg-meta {
+  font-family: var(--mono); font-size: .62rem; letter-spacing: .04em;
+  color: var(--muted); white-space: nowrap;
+}
+.filelist { list-style: none; margin: 0 0 12px; padding: 0 0 0 2px; }
+.filelist li { border-top: 1px dashed var(--border); }
+.filelist a {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 16px; padding: 9px 4px; text-decoration: none;
+}
+.filelist a:hover { background: var(--accent-dim); }
+.fname { font-size: .86rem; overflow-wrap: anywhere; }
+.fmeta {
+  flex: none; font-family: var(--mono); font-size: .6rem;
+  letter-spacing: .05em; color: var(--muted); white-space: nowrap;
+}
+.fdl { display: none; }
