@@ -1,0 +1,41 @@
+-----------------------------------------------Module 1-------------------------------------------------
+- The structure of a Compiler
+- Applications of compiler technology
+-  The Role of Lexical Analyzer
+- Input Buffering
+- Recognition of Tokens.
+
+-----------------------------------------------Module 2-------------------------------------------------
+
+First and follow------> https://youtu.be/9s1SzsnNDXI?si=Qexe4GCcp2GV6Fwc 
+Ll1 grammar --------> https://youtu.be/unjSI6Dj8-Q?si=xL5iEQ1T1CiZu_nZ
+Predictive parsing table
+Non recursive predictive parsing-----> https://youtu.be/9g9VgsXs5EI?si=CAZydigTcpG4-Uki
+Recursive desent parser --> https://youtu.be/odoHgcoombw?si=ar1-qTKeYh1j4Ggc
+Read about the Error Recovery in predictive parsing
+---------------------------------------------Module 3----------------------------------------------
+Bottom up parsing --> https://youtu.be/RGyzJUM4V0c?si=A0TY8c2DDrQCHofS
+handle pruning -->> https://youtu.be/MWb18JwEkQo?si=L9mlQxMBK4gEUfE8
+Shift reduce parser , conflicts during shift reduce parser ( SR & RR ) -->> https://youtu.be/g9Pb5L8aLeI?si=Xct1KyUpES67oh17
+Types of parsers - LR(0), SLR, CLR, LALR
+
+----------------------------------------------Module 4------------------------------------------------- 
+Syntax Directed Translation(SDD) 
+Three address codes
+Type checking 
+S attribute L attribute
+YACC tool --> https://youtu.be/bnPxdBUkGpc?si=7rnd2dVvVzcN0C8W
+
+----------------------------------------------Module 5 ------------------------------------------------------
+Issues in code generation 
+Simple code generator 
+Code optimisation 
+
+
+
+--------------------------------------------------------------------------------------------------------------------
+
+full cd playlist- 
+1) https://youtube.com/playlist?list=PL1QH9gyQXfguPNDTsnG90W2kBDQpYLDQr&si=foYTVOqqmiqabNUe
+2) https://youtube.com/playlist?list=PLPIwNooIb9vh9l2_rk2OGAWYcA9b8X9Y5&si=RMRWgtKmnIlhSMK5
+3) https://www.youtube.com/playlist?list=PLxhmqm0jYqJ9SO4Nd4hsX92xB4wEHlTmz ( sent by ma'am )

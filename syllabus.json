@@ -362,5 +362,14 @@
       "credits": 3,
       "summary": "Full title to be confirmed from the 7th semester handout."
     }
+  ],
+  "8": [
+    {
+      "slug": "major-project",
+      "title": "Major Project",
+      "code": "",
+      "credits": 12,
+      "summary": "Final-year project: problem definition, design, implementation, report and viva."
+    }
   ]
 }

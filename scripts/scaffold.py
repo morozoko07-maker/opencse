@@ -63,7 +63,8 @@ def main() -> int:
     made = 0
     for sem, entries in sorted(data.items()):
         for entry in entries:
-            cdir = COURSES / f"semester-{sem}" / entry["slug"]
+            group = "first-year" if sem == "first-year" else f"semester-{sem}"
+            cdir = COURSES / group / entry["slug"]
             if (cdir / "README.md").exists():
                 continue
             print(f"create {cdir.relative_to(ROOT)}")

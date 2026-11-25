@@ -1,0 +1,11 @@
+Module 3
+
+intro to ANN --> https://youtu.be/quCEmM2JBbk?si=ogUSYZF_7IJy80iv
+perceptron --> https://youtu.be/du5fyS44DR8?si=AfCqv44XqJlto9DA
+
+AND gate perceptron training rule --> https://youtu.be/zmIzNBMsQYQ?si=AEFMUHpvUkpjiAUT
+OR gate --> https://youtu.be/uxmNDNb0u9A?si=DRn65aUwdgqhztpY
+XOR gate -- > https://youtu.be/dM_8Y41EgsY?si=Fimd1qwpl64Z88Uq
+ensemble learning --> https://youtu.be/eNyUfpGBLts?si=edAPHLkyyjcMIS8F
+
+Q learning->> https://youtu.be/J3qX50yyiU0?si=KwS4ZlMnq6GtnE03

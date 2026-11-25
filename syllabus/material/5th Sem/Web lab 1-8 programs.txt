@@ -1,0 +1,432 @@
+//////////////////////////prog-8///////////////////////////////////////////
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+</head>
+<body>
+    <h2>Student Management System</h2>
+    <form method="POST">
+        <h3>Insert a Student</h3>
+        <label>USN:</label> <input type="text" name="usn" required><br>
+        <label>Name:</label> <input type="text" name="name" required><br>
+        <label>Branch:</label> <input type="text" name="branch" required><br>
+        <label>Semester:</label> <input type="number" name="semester" required><br>
+        <label>College:</label> <input type="text" name="college" required><br>
+        <button type="submit" name="action" value="insert">Insert</button>    
+    </form>
+    
+    <form method="POST">
+        <h3>Display All Students</h3>
+        <button type="submit" name="action" value="display">Display</button>
+    </form>
+
+    <form method="POST">
+        <h3>Delete a Student</h3>
+        <label>USN:</label> <input type="text" name="usn_delete" required><br>
+        <button type="submit" name="action" value="delete">Delete</button>
+    </form>
+    
+    <?php
+    // Database connection
+    $conn = new mysqli('localhost', 'root', '', 'student_db');
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Handle form actions
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $action = $_POST['action'];
+
+        // Insert a student
+        if ($action == 'insert') {
+            $usn = $conn->real_escape_string($_POST['usn']);
+           
+            $name = $conn->real_escape_string($_POST['name']);
+            $branch = $conn->real_escape_string($_POST['branch']);
+            $semester = (int)$_POST['semester'];
+            $college = $conn->real_escape_string($_POST['college']);
+
+            $query = "INSERT INTO students (usn, name, branch, semester, college) 
+                      VALUES ('$usn', '$name', '$branch', $semester, '$college')";
+            if ($conn->query($query)) {
+                echo "Student with USN '$usn' inserted successfully.";
+            } else {
+                echo "Error: " . $conn->error;
+            }
+        }
+
+        // Delete a student
+        elseif ($action == 'delete') {
+            if (!empty($_POST['usn_delete'])) {
+                $usn = $conn->real_escape_string($_POST['usn_delete']);
+                $query = "DELETE FROM students WHERE usn = '$usn'";
+                if ($conn->query($query)) {
+                    echo $conn->affected_rows > 0 ? "Student with USN '$usn' deleted." : "No student found with USN '$usn'.";
+                } else {
+                    echo "Error: " . $conn->error;
+                }
+            } else {
+                echo "Please provide a valid USN to delete.";
+            }
+        }
+
+        // Display all students
+        elseif ($action == 'display') {
+            $result = $conn->query("SELECT * FROM students");
+            if ($result->num_rows > 0) {
+                echo "<h3>Student Records</h3>";
+                echo "<table border='1'><tr><th>USN</th><th>Name</th><th>Branch</th><th>Semester</th><th>College</th></tr>";
+                while ($row = $result->fetch_assoc()) {
+                    echo "<tr>
+                        <td>{$row['usn']}</td>
+                        <td>{$row['name']}</td>
+                        <td>{$row['branch']}</td>
+                        <td>{$row['semester']}</td>
+                        <td>{$row['college']}</td>
+                      </tr>";
+                }
+                echo "</table>";
+            } else {
+                echo "No student records found.";
+            }
+        }
+    }
+
+    $conn->close();
+    ?>
+</body>
+</html>
+
+
+
+//////////////////////////////////////////prog-7//////////////////////////////////////////////////
+
+<html>
+<body>
+<?php
+$states = "Mississippi Alabama Texas Massachusetts Kansas";
+$b = explode(' ',$states);
+echo "<br>ORIGINAL ARRAY :<br>";
+foreach ( $b as $i => $value )
+echo "states[$i] = $value<br>";
+foreach ($b as $c)
+{
+$n = strlen($c);
+if($c[$n-1]=='s' && $c[$n-2]=='a' && $c[$n-3]=='x')
+$d[0] = $c;
+if($c[0]=='K' && $c[$n-1]=='s')
+`$d[1] = $c;
+if($c[0]=='M' && $c[$n-1]=='s')
+`$d[2] = $c;
+if($c[$n-1]=='a')
+$d[3] = $c;
+}
+echo "<br>RESULTANT ARRAY :<br>";
+for ($i=0; $i < count($d); $i++)
+echo "statesList[$i] = $d[$i]<br>";
+?>
+</body>
+</html>
+
+
+////////////////////////////////////////////prog-6////////////////////////////////////////
+
+<head>
+<meta http-equiv="refresh" content="1"/>
+<style>
+p
+{
+color:white;
+font-size:40px;
+position:absolute;
+top: 40%;
+left: 50%;
+transform: translate(-50%, -50%);
+}
+body
+{
+background-color:black;
+}
+</style>
+<p>
+<?php
+date_default_timezone_set("Asia/Calcutta"); //India time (GMT+5:30)
+echo date(" h: i : s A");
+?>
+</p>
+</head>
+
+
+////////////////////////////////////prog-5//////////////////////////////////////////
+
+<?php
+echo "<h1> REFRESH PAGE </h1>" ;
+$file = 'count.txt' ;
+$c = file_get_contents($file) ;
+file_put_contents($file, $c+1);
+echo "The number of users visited : ".$c ;
+?>
+
+////////////////////////////////prog-1////////////////////////////////////////
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Program 1</title>
+    <style>
+        * {
+            font-size: 25px;
+            padding: 10px;
+        }
+
+        table,
+        td,
+        th {
+            border: 10px solid rgb(0, 255, 153);
+            width: 33%;
+            text-align: center;
+            background-color: darkkhaki;
+        }
+
+        table {
+            margin: auto;
+        }
+
+        input {
+            text-align: center;
+            width: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <script type="text/javascript">
+        function calculate(id) {
+            var val1 = parseFloat(document.getElementById("value1").value);
+            var val2 = parseFloat(document.getElementById("value2").value);
+            var result = 0;
+            if (isNaN(val1) || isNaN(val2)) {
+                document.getElementById("answer").value = "Error!";
+                document.getElementById("answer").style.color = "red";
+                document.getElementById("answer").style.backgroundColor = "yellow";
+            }
+            else {
+                if (id == "+") {
+                    result = val1 + val2;
+                }
+                else
+                    if (id == "-") {
+                        result = val1 - val2;
+                    }
+                    else
+                        if (id == "*") {
+                            result = val1 * val2;
+                        }
+                        else
+                            if (id == "/") {
+                                result = val1 / val2;
+                            }
+                document.getElementById("answer").style.backgroundColor = "green";
+                document.getElementById("answer").style.color = "white";
+                document.getElementById("answer").value = result;
+            }
+        }
+        function cls() {
+            document.getElementById("answer").style.backgroundColor = "white";
+            clsdis("answer");
+            clsdis("value2");
+            clsdis("value1");
+        }
+
+        function clsdis(id) {
+            document.getElementById(id).value = "";
+        } 
+    </script>
+    <table>
+        <tr>
+            <th colspan="4">SIMPLE CALCULATOR</th>
+        </tr>
+        <tr>
+            <td>Value 1</td>
+            <td><input type="number" id="value1"></td>
+        </tr>
+        <tr>
+            <td>Value 2</td>
+            <td><input type="number" id="value2"></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="Addition" id="+" onclick="calculate(this.id)"></td>
+            <td><input type="button" value="Subtraction" id="-" onclick="calculate(this.id)"></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="Division" id="/" onclick="calculate(this.id)"></td>
+            <td><input type="button" value="Multiplication" id="*" onclick="calculate(this.id)"></td>
+        </tr>
+        <tr>
+            <td>Answer: </td>
+            <td><input type="text" id="answer" value="" disabled></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="button" value="Clear Values" id="cls" onclick="cls()"></td>
+        </tr>
+    </table>
+</body>
+
+
+
+
+////////////////////////////////////prog-2//////////////////////////////////////////
+
+<!DOCTYPE html> 
+<html lang="en"> 
+ 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Program - 2</title> 
+    <style> 
+        p { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+        } 
+    </style> 
+</head> 
+ 
+<body> 
+    <p id="demo"></p> 
+    <script> 
+         
+        var grow = setInterval(growing, 1000); 
+        var font_size = 5; 
+        var p = document.getElementById("demo"); 
+        function growing() 
+       { 
+            p.innerHTML = "TEXT GROWING"; 
+            p.setAttribute('style', "font-size: " + font_size + "px; color:red"); 
+            font_size += 5; 
+            if (font_size >= 50)  
+             { 
+                clearInterval(grow); 
+                shrink = setInterval(shrinking, 1000); 
+            } 
+        } 
+        function shrinking()  
+        { 
+            font_size -= 5; 
+            p.innerHTML = 'TEXT SHRINKING'; 
+ 
+            p.setAttribute('style', "font-size:" + font_size + "px; color: blue"); 
+            if (font_size === 5)  
+           { 
+                clearInterval(shrink); 
+                grow = setInterval(growing, 1000); 
+            } 
+ 
+        } 
+    </script> 
+</body> 
+</html>
+
+
+
+
+
+////////////////////////////////////prog-3//////////////////////////////////////////
+
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Program - 3</title> 
+</head> 
+<body> 
+    <script type="text/javascript"> 
+        var str = prompt("Enter the Input (either a Number or a String)", ""); 
+        if (!(isNaN(str)))  
+       { 
+            var num, rev = 0, remainder; 
+            num = parseInt(str); 
+            while (num != 0)  
+            { 
+                remainder = num % 10; 
+                num = parseInt(num / 10); 
+                rev = rev * 10 + remainder; 
+            } 
+            alert("Reverse of " + str + " is " + rev); 
+        } 
+        else  
+       { 
+            str = str.toUpperCase(); 
+            for (var i = 0; i < str.length; i++)  
+           { 
+                var chr = str.charAt(i); 
+                if (chr == 'A' || chr == 'E' || chr == 'I' || chr == 'O' || chr == 'U') 
+                    break; 
+            } 
+            if (i < str.length) 
+                alert("The position of the left most vowel is " + (i + 1)); 
+            else 
+                alert("No vowel found in the entered string: " + str); 
+        } 
+    </script> 
+</body></html>
+
+
+
+
+////////////////////////////////////prog-4//////////////////////////////////////////
+
+CSS⬇️
+
+
+*{ 
+    display: block; font-size: 20px; margin-left: 15px; 
+} 
+USN  
+{ 
+    color: blue; 
+    font-size: 30px; 
+    margin-top: 20px; 
+    margin-left: -5px; 
+}
+
+XML⬇️
+
+<?xml version="1.0" encoding="UTF-8"?> 
+<?xml-stylesheet type="text/css" href="ab.css"?> 
+<STUDENTDATA> 
+ <STUDENT> 
+  <USN>USN   : 1BY18CS404</USN> 
+  <NAME>NAME : K B HEMANTH RAJ</NAME> 
+  <COLLEGE>COLLEGE : BMSIT</COLLEGE> 
+  <BRANCH>BRANCH :CSE</BRANCH> 
+  <YEAR>YEAR : 2018</YEAR> 
+  <EMAIL>E-MAIL : futurevisionbie@gmail.com</EMAIL> 
+ </STUDENT> 
+ <STUDENT> 
+  <USN>USN : 1BY18CS413</USN> 
+  <NAME>NAME : ABDUL</NAME> 
+  <COLLEGE>COLLEGE : BMSIT</COLLEGE> 
+  <BRANCH>BRANCH :CSE</BRANCH> 
+  <YEAR>YEAR : 2018</YEAR> 
+  <EMAIL>E-MAIL : Abdul@gmail.com</EMAIL> 
+ </STUDENT> 
+ <STUDENT> 
+  <USN>USN   : 1BY18CS419</USN> 
+  <NAME>NAME : PUNITH</NAME> 
+  <COLLEGE>COLLEGE : BMSIT</COLLEGE> 
+  <BRANCH>BRANCH :CSE</BRANCH> 
+  <YEAR>YEAR : 2018</YEAR> 
+  <EMAIL>E-MAIL : punith@gmail.com</EMAIL> 
+ </STUDENT> 
+</STUDENTDATA>
