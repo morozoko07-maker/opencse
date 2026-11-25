@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define max 5
+
+void push(char stack[max][80], int *top, char data[80]) {
+    if (*top == max - 1)
+    {
+            printf("Stack Overflow. \n");
+            return;
+    };
+    (*top)++;
+    strcpy(stack[*top], data);
+}
+
+int pop(char stack[max][80], int *top, char data[80]) {
+    if (*top == -1)
+        return -1;
+    else {
+        strcpy(data, stack[*top]);
+        (*top)--;
+    }
+}
+
+void display(char stack[max][80], int top) {
+    if (top == -1)
+        printf("\n Stack is Empty \n");
+    else {
+        printf("\nThe URLs in the Stack are :\n");
+        for (int i = 0; i <= top; ++i) {
+            printf("%d. %s\n", i + 1, stack[i]);
+        }
+    }
+}
+
+int main() {
+    char stack[max][80], nm[80];
+    int top, ch,y;
+    top = -1; // Initialize Stack
+    for(;;)
+   {
+       printf("1. PUSH    2.POP    3.DISPLAY    4.EXIT\n");
+       printf("Enter your choice:\n");
+       scanf("%d", &ch);
+
+       switch (ch) {
+            case 1: // push
+                printf("\nEnter string : ");
+                scanf("%s", nm);
+                push(stack, &top, nm);
+                break;
+            case 2: // pop
+                  y = pop(stack, &top, nm);
+                if (y == -1)
+                    printf("\n Stack is Empty \n");
+                else
+                    printf("Popped string is : %s\n", nm);
+                printf("\n");
+                break;
+            case 3:
+                display(stack, top);
+                break;
+            case 4:
+                exit(0);
+            default:
+                printf("Invalid operation \n");
+        }
+    }
+
+    return 0;
+}

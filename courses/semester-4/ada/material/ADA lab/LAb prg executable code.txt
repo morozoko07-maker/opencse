@@ -1,0 +1,737 @@
+/////////////////////selection sort///////////////////////////////////
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+void swap(int *a,int*b)
+{
+int temp=*a;
+*a=*b;
+*b=temp;
+}
+void sel(int a[],int n)
+{
+int min;
+for(int i=0;i<n-1;i++)
+{
+min=i;
+for(int j=i+1;j<n;j++)
+{
+if(a[j]<a[min])
+min=j;
+}
+swap(&a[i],&a[min]);
+}
+}
+int main()
+{
+time_t start,end;
+double cpu;
+int n,a[10000];
+printf("\nenter the number of elements ");
+scanf("%d",&n);
+srand(100);
+for(int i=0;i<n;i++)
+{
+ a[i]=rand()%1000;
+printf("%d ",a[i]);
+}
+start=clock();
+sel(a,n);
+end=clock();
+for(int i=0;i<n;i++)
+printf("\n%d",a[i]);
+cpu=(double)(end-start)/CLOCKS_PER_SEC;
+printf("\n the cpu time taken is %f",cpu*1000);
+return 0;
+}
+
+
+/////////////////////////quick sort /////////////////////////////////
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+// Function to swap two elements
+void swap(int* a, int* b)
+ {
+int temp = *a;
+*a = *b;
+ *b = temp;
+}
+// Function to partition the array
+
+int partition(int arr[], int low, int high)
+ {
+int pivot = arr[high];
+int i = low - 1;
+for (int j = low; j <= high - 1; j++)
+ {
+if (arr[j] <= pivot)
+ {
+i++;
+swap(&arr[i], &arr[j]);
+}
+}
+
+swap(&arr[i + 1], &arr[high]);
+ return i + 1;
+}
+
+
+// Function to perform Quick Sort
+void quickSort(int arr[], int low, int high)
+ {
+if (low < high)
+ {
+int pivotIndex = partition(arr, low, high);
+quickSort(arr, low, pivotIndex - 1);
+quickSort(arr, pivotIndex + 1, high);
+} 
+}
+
+
+int main() 
+{
+int n;
+printf("Enter the number of elements: ");
+scanf("%d", &n);
+// Generate random elements
+int arr[n];
+srand(time(0));
+for (int i = 0; i < n; i++) 
+{
+ arr[i] = rand() % 1000; // Random numbers between 0 and 99
+}
+// Print the unsorted array
+printf("Unsorted array:\n");
+for (int i = 0; i < n; i++) 
+{
+printf("%d ", arr[i]);
+}
+printf("\n");
+// Calculate the time taken for sorting
+clock_t start = clock();
+quickSort(arr, 0, n - 1);
+clock_t end = clock();
+double time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+printf("\nSorted elements:\n");
+for (int i = 0; i < n; i++)
+ {
+printf("%d ", arr[i]);
+}
+printf("\n");
+printf("\nTime taken: %lf seconds\n", time_taken);
+return 0;
+}
+
+//////////////////////////////////merge sort //////////////////////////////////////////
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+// Function to merge two subarrays
+void merge(int arr[], int left[], int right[], int left_size, int right_size)
+ {
+int i = 0, j = 0, k = 0;
+// Merge elements from left[] and right[] back into arr[]
+while (i < left_size && j < right_size)
+{
+if (left[i] <= right[j]) 
+{
+arr[k] = left[i];
+i++;
+}
+ else
+ {
+arr[k] = right[j];
+j++;
+}
+k++;
+}
+// Copy the remaining elements of left[], if any
+while (i < left_size) 
+{
+arr[k] = left[i];
+i++;
+k++;
+}
+// Copy the remaining elements of right[], if any
+while (j < right_size)
+ {
+arr[k] = right[j];
+j++;
+k++;
+} 
+}
+
+
+// Merge Sort function
+void mergeSort(int arr[], int size)
+ {
+if (size < 2)
+ {
+return; // Base case: array is already sorted
+}
+ int mid = size / 2;
+int left[mid];
+int right[size - mid];
+// Split the array into two subarrays
+for (int i = 0; i < mid; i++) 
+{
+left[i] = arr[i];
+}
+for (int i = mid; i < size; i++)
+ {
+right[i - mid] = arr[i];
+}
+// Recursive calls to mergeSort() for the subarrays
+mergeSort(left, mid);
+mergeSort(right, size - mid);
+// Merge the sorted subarrays
+ merge(arr, left, right, mid, size-mid);
+}
+int main() {
+int n;
+printf("Enter the number of elements: ");
+scanf("%d", &n);
+// Generate random elements
+int arr[n];
+srand(time(0));
+for (int i = 0; i < n; i++) 
+{
+arr[i] = rand() % 100; // Random numbers between 0 and 99
+}
+// Print the unsorted array
+printf("Unsorted array:\n");
+for (int i = 0; i < n; i++)
+ {
+printf("%d ", arr[i]);
+}
+printf("\n");
+// Perform Merge Sort
+clock_t start_time = clock();
+mergeSort(arr, n);
+clock_t end_time = clock();
+// Print the sorted array
+printf("Sorted array:\n");
+for (int i = 0; i < n; i++) 
+{
+printf("%d ", arr[i]);
+}
+printf("\n");
+// Calculate and print the time taken
+double time_taken = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+printf("Time taken: %.6fs\n", time_taken);
+return 0;
+}
+
+
+
+
+///////////////////////////////prims ////////////////////////////////
+#include<stdio.h>
+int a,b,u,v,n,i,j,ne=1;
+int visited[10],min,mincost=0,cost[10][10];
+int main()
+{
+printf("Enter the no. of vertices:\n");
+scanf("%d",&n);
+printf("enter the graph data:\n");
+for(i=1;i<=n;i++)
+{for(j=1;j<=n;j++)
+scanf("%d",&cost[i][j]);
+if(cost[i][j]==0)
+cost[i][j]=999;
+}
+for(i=2;i<=n;i++)
+visited[i]=0;
+printf("The edges of spaning tree are:\n");
+visited[1]=1;
+while(ne<n)
+{
+for(i=1,min=999;i<=n;i++)
+for(j=1;j<=n;j++)
+if(cost[i][j]<min)
+{
+if(visited[i]==0)
+continue;
+else
+{
+min=cost[i][j];
+a=u=i;
+b=v=j;
+}
+}
+if(visited[u]==0 || visited[v]==0)
+{
+printf("%d\tEdge\t(%d,%d)=%d\n",ne++,u,v,min);
+mincost+=min;
+visited[v]=1;
+}
+cost[u][v]=cost[v][u]=999;
+}
+printf("\n\tMINCOST =%d\n",mincost);
+return 1;
+}
+
+///////////////////////////kushkal's ////////////////////////////////////////
+#include<stdio.h>
+int parent[10],min,ne=1,mincost=0,cost[10][10];
+int i,j,a,b,u,v,n;
+int main()
+{
+printf("Enter the no. of vertices:\n");
+scanf("%d",&n);
+printf("Enter the graph data:\n");
+for(i=1;i<=n;i++)
+{for(j=1;j<=n;j++)
+scanf("%d",&cost[i][j]);
+if(cost[i][j]==0)
+cost[i][j]=999;
+}
+while(ne<n)
+{
+for(i=1,min=999;i<=n;i++)
+for(j=1;j<=n;j++)
+if(cost[i][j]<min)
+{
+min=cost[i][j];
+a=u=i;
+b=v=j;
+}
+while (parent[u])
+u=parent[u];
+while(parent[v])
+v=parent[v];
+{if(u!=v)
+printf("\n%d\tEdge\t(%d,%d)=%d",ne++,a,b,min);
+mincost+=min;
+parent[v]=u;
+}
+cost[a][b]=cost[b][a]=999;
+}
+printf("\n\tMINCOST=%d\n",mincost);
+return 1;
+}
+
+/////////////////////////////////////////////dijkstra/////////////////////////////////////////////////////
+
+#include<stdio.h>
+void dijikstra(int n,int v,int cost[10][10],int dist[])
+    {
+        int i,u,count,w,flag[10],min;
+        for(i=1;i<=n;i++)
+        flag[i]=0,dist[i]=cost[v][i];
+        flag[v]=1,dist[v]=1;
+        count=2;
+
+        while(count<=n)
+            {
+                min=999;
+                for(w=1;w<=n;w++)
+                if(dist[w]<min && !flag[w])
+                min=dist[w],u=w;
+                flag[u]=1;
+                count++;
+                for(w=1;w<=n;w++)
+                if(dist[u]+cost[u][w]<dist[w] && !flag[w])
+                dist[w]=dist[u]+cost[u][w];
+            }
+    }
+
+int main()
+{
+    int n,v,i,j,cost[10][10],dist[10];
+    printf("Enter no. of nodes:\n");
+    scanf("%d",&n);
+    printf("Enter cost matrix:\n");
+    for(i=1;i<=n;i++)
+    for(j=1;j<=n;j++)
+    {
+        scanf("%d",&cost[i][j]);
+        if(cost[i][j]==0)
+        cost[i][j]=999;
+    }
+    printf("Enter the source vertex:\n");
+    scanf("%d",&v);
+    dijikstra(n,v,cost,dist);
+    printf("Shortest path from\n");
+    for(j=1;j<=n;j++)
+    if(j!=v)
+    printf("%d -> %d :::: %d\n",v,j,dist[j]);
+    return 1;
+}
+
+
+////////////////////////////////////////////////// Topological ordering .//////////////////////////////////////////////////////////////////////////
+#include<stdio.h>
+void main()
+{
+    int i,j,a[10][10],n,m=0,k,que[10],flag[10];
+    printf("enter the no of vertices\n");
+    scanf("%d",&n);
+    for(i=1;i<=n;i++)
+        flag[i]=0,que[i]=0;
+    printf("enter the matrix:\n");
+    for(i=1;i<=n;i++)
+     {
+       for(j=1;j<=n;j++)
+        {
+            scanf("%d",&a[i][j]);
+            if(a[i][j])
+            flag[j]++;
+        }
+    }
+    for(k=0;k<n;k++)
+    {
+        for(i=1;i<=n;i++)
+        {
+            if(!flag[i])
+            {
+                flag[i]=-1;
+                que[++m]=i;
+                for(j=1;j<=n;j++)
+                {
+                    if(a[i][j]&&flag[j]>0)
+                    {
+                        flag[j]--;
+                    }
+                }
+            }
+        }
+    }
+        
+    if(m==n)
+        {
+            printf("The topological order is:\n");
+            for(i=1;i<=n;i++)
+                {
+                printf("\t %d",que[i]);
+                }
+        }
+    else
+        printf("No topological order\n");
+}
+/*
+enter the no of vertices
+5
+enter the matrix:
+0 0 1 0 0
+0 0 1 0 0
+0 0 0 1 1 
+0 0 0 0 1
+0 0 0 0 0
+The topological order is:
+         1       2       3       4       5
+*/
+
+
+////////////////////////////////////0/1 knapsack///////////////////////////////////////////////
+
+#include <stdio.h>
+// Function to find maximum of two integers
+int max(int a, int b)
+ {
+return (a > b) ? a : b;
+}
+// Function to solve 0/1 Knapsack problem using dynamic programming
+int knapsack(int W, int wt[], int val[], int n) 
+{
+int i, w;
+int K[n + 1][W + 1];
+// Build K[][] in bottom-up manner
+for (i = 0; i <= n; i++) 
+{
+for (w = 0; w <= W; w++)
+ {
+if (i == 0 || w == 0)
+K[i][w] = 0;
+else if (wt[i - 1] <= w)
+K[i][w] = max(val[i - 1] + K[i - 1][w - wt[i - 1]], K[i - 1][w]);
+else
+K[i][w] = K[i - 1][w];
+}
+}
+ return K[n][W];
+}
+int main() {
+int n, W;
+printf("Enter number of items: ");
+scanf("%d", &n);
+int val[n], wt[n];
+printf("Enter value and weight for each item:\n");
+for (int i = 0; i < n; i++)
+ {
+printf("Item %d value: ", i + 1);
+scanf("%d", &val[i]);
+printf("Item %d weight: ", i + 1);
+scanf("%d", &wt[i]);
+}
+printf("Enter the capacity of knapsack: ");
+scanf("%d", &W);
+printf("Maximum value that can be obtained is %d\n", knapsack(W, wt, val, n));
+ return 0;
+}
+
+
+/////////////////////////////sub set /////////////////////////
+
+#include <stdio.h>
+// Function to print the current subset
+void printSubset(int subset[], int size)
+{
+printf("{ ");
+for (int i = 0; i < size; i++)
+{
+printf("%d ", subset[i]);
+}
+printf("}\n");
+}
+// Function to find subsets that sum to the given target
+void findSubsets(int set[], int n, int target)
+{
+int subset[n];
+int totalSubsets = 1 << n; // Total number of subsets (2^n)
+// Iterate over all possible subsets
+for (int i = 0; i < totalSubsets; i++)
+{
+int sum = 0;
+int subsetSize = 0;
+// Check which elements are included in the current subset
+for (int j = 0; j < n; j++)
+{
+if (i & (1 << j))
+{
+subset[subsetSize++] = set[j];
+sum += set[j];
+}
+}
+ // If the sum of the current subset is equal to the target, print the subset
+if (sum == target)
+{
+printSubset(subset, subsetSize);
+}
+}
+}
+int main()
+{
+int set[10], n, target;
+printf("Enter the number of elements in the set: ");
+scanf("%d", &n);
+printf("Enter the elements of the set: ");
+for (int i = 0; i < n; i++)
+{
+scanf("%d", &set[i]);
+}
+printf("Enter the target sum: ");
+scanf("%d", &target);
+findSubsets (set, n, target);
+return 0;
+}
+
+//////////////////////// N queens ///////////////////////////
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+int a[30],count=0;
+//row=index and column=value
+int place(int pos)
+{
+int i;
+for(i=1;i<pos;i++)
+{
+if((a[i]==a[pos])||((abs(a[i]-a[pos])==abs(i-pos))))
+return 0;
+}
+return 1;
+}
+void print_sol(int n)
+{
+int i,j;
+count++;
+printf("\n\nSolution #%d:\n",count);
+for(i=1;i<=n;i++)
+{
+for(j=1;j<=n;j++)
+{
+if(a[i]==j)
+printf("Q\t");
+else
+printf("*\t");
+}
+printf("\n");
+}
+}
+void queen(int n)
+{
+int k=1;
+a[k]=0;
+while(k!=0)
+{
+do
+{
+a[k]++;
+}while((a[k]<=n)&&!place(k));
+if(a[k]<=n)
+{
+if(k==n)
+print_sol(n);
+else
+{
+k++;
+a[k]=0;
+}
+}
+else
+k--;
+}
+}
+void main()
+{
+int i,n;
+printf("Enter the number of Queens\n");
+scanf("%d",&n);
+queen(n);
+ printf("\nTotal solutions=%d",count);
+}
+
+#include <stdio.h> 
+void findSubset(int S[], int n, int d, int subset[], int
+size, int sum); 
+int main() 
+{ 
+ int S[] = {1, 2, 3}; 
+ int n = sizeof(S) / sizeof(S[0]); 
+ int d = 3; 
+ int subset[n]; 
+ int size = 0; 
+ int sum = 0; 
+ printf("Given items in the SET: "); 
+ for(int i=0;i<n;i++) 
+ printf("%d ",S[i]); 
+ printf("\nDesirable 'SUM' : %d",d); 
+ printf("\nFollowing are the Subsets found: \n"); 
+ findSubset(S, n, d, subset, size, sum); 
+ if (size == 0) 
+ { 
+ printf("No more subsets found.\n"); 
+ } 
+ return 0; 
+} 
+void findSubset(int S[], int n, int d, int subset[], int
+size, int sum) 
+{ 
+ if (sum == d) 
+ { 
+ printf("{"); 
+ for (int i = 0; i<size; i++) 
+ { 
+ printf("%d", subset[i]); 
+ if (i < size-1) 
+ { 
+ printf(","); 
+ } 
+ } 
+ printf("}\n"); 
+ return; 
+ } 
+ if (sum > d || n == 0) 
+ { 
+ return; 
+ } 
+ subset[size] = S[0];  findSubset(S+1, n-1, d, subset, size+1, sum+S[0]); 
+ findSubset(S+1, n-1, d, subset, size, sum); 
+} 
+
+Program: 
+#define N 4
+#include <stdbool.h>
+#include <stdio.h>
+ 
+// A utility function to print solution
+void printSolution(int board[N][N]) 
+{ 
+ for (int i = 0; i < N; i++) { 
+ for (int j = 0; j < N; j++) { 
+ if(board[i][j]) 
+ printf("Q "); 
+ else
+ printf(". "); 
+ } 
+ printf("\n"); 
+ } 
+} 
+ 
+// A utility function to check if a queen can be placed on 
+board[row][col]. 
+bool isSafe(int board[N][N], int row, int col) 
+{ 
+ int i, j; 
+ 
+ // Check this row on left side
+ for (i = 0; i < col; i++) 
+ if (board[row][i]) 
+ return false; for (i = row, j = col; i >= 0 && j >= 0; i--, j--) 
+ if (board[i][j]) 
+ return false; 
+ 
+ // Check lower diagonal on left side
+ for (i = row, j = col; j >= 0 && i < N; i++, j--) 
+ if (board[i][j]) 
+ return false; 
+ 
+ return true; 
+} 
+ 
+// A recursive utility function to solve N
+// Queen problem
+bool solveNQUtil(int board[N][N], int col) 
+{ 
+ // Base case: If all queens are placed then return true
+ if (col >= N) 
+ return true; 
+ 
+ // Consider this column and try placing this queen in all rows 
+one by one
+ for (int i = 0; i < N; i++) { 
+ 
+ // Check if the queen can be placed on board[i][col]
+ if (isSafe(board, i, col)) { 
+ 
+ // Place this queen in board[i][col]
+ board[i][col] = 1; 
+ 
+ // Recur to place rest of the queens
+ if (solveNQUtil(board, col + 1)) 
+ return true; 
+ 
+ board[i][col] = 0; // BACKTRACK
+ } 
+ } 
+ 
+ // If the queen cannot be placed in any row in
+ // this column col then return false
+ return false; 
+} 
+ 
+bool solveNQ() 
+{ 
+ int board[N][N] = { { 0, 0, 0, 0 }, 
+ { 0, 0, 0, 0 }, 
+ { 0, 0, 0, 0 }, 
+ { 0, 0, 0, 0 } }; 
+ if (solveNQUtil(board, 0) == false) 
+ { 
+ printf("Solution does not exist"); 
+ return false; 
+ } 
+ 
+ printSolution(board); 
+ return true; 
+} 
+ 
+// Driver program to test above function
+int main() 
+{ 
+ printf("Solution for 4-Queens Problem:\n\n"); 
+ solveNQ(); 
+ return 0; 
+} 
