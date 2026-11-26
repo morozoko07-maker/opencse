@@ -342,7 +342,7 @@ def classify_material(rel: str) -> str:
 
 def toc_html(body: str) -> str:
     heads = re.findall(r'<h2 id="([^"]+)">(.*?)</h2>', body, flags=re.S)
-    if len(heads) < 4:
+    if len(heads) < 3:
         return ""
     items = "".join(
         f'<li><a href="#{hid}">{html.escape(strip_tags(re.sub(r"<a class=\"anchor\".*?</a>", "", h)).strip())}</a></li>'
@@ -464,7 +464,7 @@ PAGE = """<!DOCTYPE html>
 (function(){var t=null;try{var m=/[?&]theme=(light|dark|midnight|oled)/.exec(location.search);t=m?m[1]:localStorage.getItem("opencse-theme");}catch(e){}document.documentElement.setAttribute("data-theme",t||"dark");})();
 </script>
 </head>
-<body>
+<body %%BODYCLASS%%>
 <a class="skip" href="#main">Skip to content</a>
 <header class="topbar">
   <a class="brand" href="%%ROOT%%index.html"><span class="mark">OC</span><span>OpenCSE</span></a>
@@ -484,6 +484,7 @@ PAGE = """<!DOCTYPE html>
   <main class="content" id="main">
 %%BODY%%
   </main>
+  <aside class="rail">%%RAIL%%</aside>
 </div>
 <footer class="footer">
   <p class="close-line">Built by students,<br>for the batch behind us.</p>
@@ -562,13 +563,16 @@ def sidebar_html(courses: list[Course], active_dir: str | None, root: str) -> st
     return "\n".join(parts)
 
 
-def page(out_rel: str, title: str, body: str, courses: list[Course], active: str | None, desc: str = SITE_DESC) -> None:
+def page(out_rel: str, title: str, body: str, courses: list[Course], active: str | None,
+         desc: str = SITE_DESC, rail: str = "") -> None:
     root = root_prefix(out_rel)
     full_title = SITE_NAME if title == SITE_NAME else f"{title} · {SITE_NAME}"
     out = (
         PAGE.replace("%%TITLE%%", html.escape(full_title))
         .replace("%%DESC%%", html.escape(desc))
         .replace("%%ROOT%%", root)
+        .replace("%%BODYCLASS%%", 'class="has-rail"' if rail else "")
+        .replace("%%RAIL%%", rail)
         .replace("%%SIDEBAR%%", sidebar_html(courses, active, root))
         .replace("%%BODY%%", body)
     )
@@ -739,7 +743,8 @@ def render_vision(courses: list[Course]) -> None:
         "</section>"
     )
     page("vision/index.html", "Why this exists",
-         hero + f'<article class="prose vision">{body_html}</article>', courses, None)
+         hero + f'<article class="prose vision">{body_html}</article>', courses, None,
+         rail=toc_html(body_html))
 
 
 def render_all_courses(courses: list[Course]) -> None:
@@ -799,8 +804,9 @@ def render_course(course: Course, courses: list[Course]) -> None:
                                    for hid, txt in topics)
                          + "</ul></nav>")
 
-    if main_doc:
-        parts.append(toc_html(main_doc.body_html))
+    toc = toc_html(main_doc.body_html) if main_doc else ""
+    if toc:
+        parts.append(toc)
 
     if course.files:
         total = sum(item[1] for item in course.files)
@@ -857,20 +863,24 @@ def render_course(course: Course, courses: list[Course]) -> None:
         "even without the file — and someone can fill it.</p>"
     )
     page(out_rel, course.title, "\n".join(parts), courses, course.url_dir,
-         desc=course.meta.get("summary", SITE_DESC))
+         desc=course.meta.get("summary", SITE_DESC), rail=toc)
 
     # Sub-pages (notes/*.md)
     for d in course.docs[1:]:
         droot = root_prefix(d.out_rel)
+        page_title = d.title
+        if page_title.strip().lower() in ("revision sheet", "revision"):
+            page_title = f"{course.title} — revision sheet"
         body = (
             f'<p class="crumb"><a href="{droot}index.html">Courses</a> / '
             f'<a href="index.html">{html.escape(course.title)}</a></p>'
-            f"<h1>{html.escape(d.title)}</h1>"
+            f"<h1>{html.escape(page_title)}</h1>"
             f"{toc_html(d.body_html)}"
             f'<article class="prose">{d.body_html}</article>'
             f'<p class="editnote">Source: <code>{html.escape(d.source.relative_to(ROOT).as_posix())}</code></p>'
         )
-        page(d.out_rel, f"{course.title}: {d.title}", body, courses, course.url_dir)
+        page(d.out_rel, page_title, body, courses, course.url_dir,
+             rail=toc_html(d.body_html))
 
 
 def render_search_index(courses: list[Course]) -> None:
