@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping. Two ways to contribute: open an issue, or send a pull request.
+Thanks for helping. Everything on this site arrives by pull request — add the file, add the course entry, and send it in.
 
 ## Before you add material
 

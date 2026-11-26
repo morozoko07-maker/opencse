@@ -790,9 +790,9 @@ def render_course(course: Course, courses: list[Course]) -> None:
             parts.append("</ul></section>")
 
     parts.append(
-        '<p class="editnote">Spotted something wrong? '
-        '<a href="https://github.com/morozoko07-maker/opencse">Open an issue or PR</a> — '
-        "corrections are the most valuable contribution.</p>"
+        '<p class="editnote">Have notes, a paper or a correction? '
+        '<a href="https://github.com/morozoko07-maker/opencse/blob/main/CONTRIBUTING.md">'
+        "Send a pull request</a> — that is how everything here gets added.</p>"
     )
     page(out_rel, course.title, "\n".join(parts), courses, course.url_dir,
          desc=course.meta.get("summary", SITE_DESC))
