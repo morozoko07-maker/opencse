@@ -52,6 +52,19 @@ Thanks for helping. Everything on this site arrives by pull request — add the 
 6. Commit, push, open a PR. Describe what you added and where the material came
    from.
 
+## If part of the syllabus is missing
+
+You do not need the file to report a gap. Send a pull request (or edit the page
+directly) saying:
+
+- the subject and semester,
+- the module or unit that is missing,
+- what is missing — notes, a question paper, a lab manual, a worked solution,
+- where you already looked.
+
+A precise gap is more useful than a vague one. Someone else can fill it, and the
+page gets a line saying it is incomplete until they do.
+
 ## Style
 
 - British or American spelling — pick one per file and stay consistent.
