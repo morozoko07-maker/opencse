@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenCSE — what it is, and what comes next</title>
+<meta name="description" content="An explanation of OpenCSE and the proposed club platform: the problem, what exists, what is missing, and what comes next.">
+<meta name="theme-color" content="#121212">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #121212; --surface: #1a1a1a; --panel: #161616;
+    --border: rgba(241,241,239,.11); --strong: rgba(241,241,239,.26);
+    --ink: #f1f1ef; --muted: #9c9e98; --accent: #8fa68e;
+    --accent-dim: rgba(143,166,142,.14);
+    --display: "Funnel Display", ui-sans-serif, system-ui, sans-serif;
+    --sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    --mono: "Geist Mono", ui-monospace, Menlo, monospace;
+    --shell: clamp(960px, 86vw, 1180px);
+    color-scheme: dark;
+  }
+  html[data-theme="light"] {
+    --bg: #eeecea; --surface: #e4e1dd; --panel: #f6f5f2;
+    --border: rgba(51,50,49,.15); --strong: rgba(51,50,49,.34);
+    --ink: #333231; --muted: #5f5e58; --accent: #55634e;
+    --accent-dim: rgba(92,107,84,.12); color-scheme: light;
+  }
+  html[data-theme="midnight"] {
+    --bg: #000; --surface: #0a0a0a; --panel: #060606;
+    --border: rgba(255,255,255,.1); --strong: rgba(255,255,255,.24);
+    --ink: #ededed; --muted: #86868a; --accent: #9db096;
+    --accent-dim: rgba(157,176,150,.12); color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 400 clamp(16px, .25vw + 12.6px, 18px)/1.62 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-underline-offset: 3px; }
+  a:hover { color: var(--accent); }
+  .bar {
+    position: sticky; top: 0; z-index: 20; display: flex; align-items: center;
+    gap: 16px; min-height: 58px; padding: 10px 22px;
+    background: color-mix(in srgb, var(--bg) 94%, transparent);
+    backdrop-filter: blur(8px); border-bottom: 1px solid var(--border);
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px; text-decoration: none;
+    font-family: var(--mono); font-size: .76rem; letter-spacing: .08em; text-transform: uppercase;
+  }
+  .mark {
+    display: grid; place-items: center; width: 28px; height: 28px; border-radius: 4px;
+    background: var(--ink); color: var(--bg); font-family: var(--mono);
+    font-size: .74rem; font-weight: 500;
+  }
+  .tag {
+    margin-left: auto; font-family: var(--mono); font-size: .6rem;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+  }
+  .themes { display: flex; border: 1px solid var(--border); border-radius: 5px; overflow: hidden; }
+  .themes button {
+    height: 34px; padding: 0 10px; border: 0; border-left: 1px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer;
+    font-family: var(--mono); font-size: .58rem; letter-spacing: .09em; text-transform: uppercase;
+  }
+  .themes button:first-child { border-left: 0; }
+  .themes button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+  .shell {
+    max-width: var(--shell); margin: 0 auto; padding: 44px 24px 80px;
+    display: grid; grid-template-columns: minmax(0, 39em) 200px;
+    justify-content: center; column-gap: 64px; row-gap: 0;
+  }
+  .hero { grid-column: 1 / -1; padding-bottom: 40px; border-bottom: 1px solid var(--border); max-width: 40em; }
+  .eyebrow {
+    margin: 0 0 16px; font-family: var(--mono); font-size: .62rem;
+    letter-spacing: .16em; text-transform: uppercase; color: var(--accent);
+  }
+  h1 {
+    margin: 0 0 20px; font-family: var(--display); font-weight: 500;
+    font-size: clamp(2.3rem, 4.6vw, 3.3rem); line-height: 1.02; letter-spacing: -.04em;
+    text-wrap: balance;
+  }
+  .lede { margin: 0; max-width: 34em; color: var(--muted); font-size: 1.05rem; text-wrap: pretty; }
+  .stats { display: flex; flex-wrap: wrap; gap: 34px; margin-top: 32px; }
+  .stats strong { display: block; font-family: var(--display); font-size: 1.75rem; font-weight: 500; }
+  .stats span { font-family: var(--mono); font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  main { min-width: 0; }
+  main h2 {
+    display: flex; align-items: baseline; gap: 12px;
+    margin: 2.6em 0 .7em; font-family: var(--display); font-weight: 500;
+    font-size: 1.4rem; letter-spacing: -.03em; counter-increment: sec;
+  }
+  main { counter-reset: sec; }
+  main h2::before {
+    content: counter(sec, decimal-leading-zero); font-family: var(--mono);
+    font-size: .64rem; letter-spacing: .08em; color: var(--accent);
+  }
+  main p, main li { max-width: 36em; font-size: .97rem; line-height: 1.72; }
+  main p { margin: 0 0 1.1em; }
+  main ol { margin: 0 0 1.1em; padding-left: 1.3em; }
+  main li { margin: .4em 0; }
+  main li::marker { color: var(--muted); }
+  .flow {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px;
+    margin: 26px 0 10px; max-width: 36em; background: var(--border);
+    border: 1px solid var(--border); border-radius: 5px; overflow: hidden;
+  }
+  .step { padding: 18px; background: var(--bg); }
+  .step span { font-family: var(--mono); font-size: .58rem; letter-spacing: .1em; color: var(--accent); }
+  .step h3 { margin: 10px 0 6px; font-family: var(--display); font-weight: 500; font-size: .96rem; letter-spacing: -.01em; }
+  .step p { margin: 0; font-size: .83rem; line-height: 1.55; color: var(--muted); max-width: none; }
+  .callout {
+    margin: 28px 0; padding: 20px 22px; max-width: 36em;
+    border-left: 2px solid var(--accent); background: var(--accent-dim);
+  }
+  .callout .label { margin: 0 0 8px; font-family: var(--mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  .callout p { margin: 0; max-width: none; }
+  .rail { align-self: start; position: sticky; top: 90px; padding-left: 18px; border-left: 1px solid var(--border); }
+  .rail p { margin: 0 0 10px; font-family: var(--mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .rail ol { list-style: none; margin: 0; padding: 0; }
+  .rail li { margin: 0 0 8px; font-size: .78rem; line-height: 1.4; }
+  .rail a { color: var(--muted); text-decoration: none; }
+  .rail a:hover { color: var(--ink); }
+  footer { grid-column: 1 / -1; margin-top: 64px; padding-top: 22px; border-top: 1px solid var(--border); font-size: .76rem; color: var(--muted); }
+  footer p { margin: 0 0 6px; max-width: 90ch; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (max-width: 1100px) {
+    .shell { grid-template-columns: 1fr; gap: 34px; }
+    .rail { display: none; }
+    .hero { max-width: none; }
+  }
+  @media (max-width: 640px) {
+    .tag { display: none; }
+    .flow { grid-template-columns: 1fr; }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; }
+    .themes button { height: 44px; min-width: 44px; padding: 0 7px; }
+    .bar { padding: 8px 14px; }
+  }
+</style>
+<script>
+(function(){try{var t=localStorage.getItem("vision-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();
+</script>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="#top"><span class="mark">OC</span><span>OpenCSE</span></a>
+  <span class="tag">Proposal · not part of the notes site</span>
+  <div class="themes" role="group" aria-label="Colour theme">
+    <button type="button" data-theme-set="light">Light</button>
+    <button type="button" data-theme-set="dark">Dark</button>
+    <button type="button" data-theme-set="midnight">Midnight</button>
+  </div>
+</header>
+
+<div class="shell" id="top">
+  <section class="hero">
+    <p class="eyebrow">Why this exists</p>
+    <h1>Course material should outlive the batch that made it.</h1>
+    <p class="lede">Every year the same notes are collected again, the same papers are hunted down again,
+      and the same advice is passed on in private. This is one attempt to stop that cycle — and the
+      first piece of something larger.</p>
+    <div class="stats">
+      <div><strong>49</strong><span>courses</span></div>
+      <div><strong>1318</strong><span>files</span></div>
+      <div><strong>47</strong><span>revision sheets</span></div>
+      <div><strong>0</strong><span>trackers or ads</span></div>
+    </div>
+  </section>
+
+  <main>
+    <h2 id="problem">The problem</h2>
+    <p>Every semester, the same material is collected again from scratch. Notes sit in WhatsApp groups
+      that get archived, in personal Drive folders nobody else can open, and on the laptops of seniors
+      who graduate and take their files with them. The next batch arrives, cannot find what it needs,
+      and either pays for photocopies of notes that already exist or repeats the work of collecting them.</p>
+    <p>Exam patterns and internal assessment splits are passed on as folklore. A student finds out what a
+      subject actually demands — which units carry weight, which questions repeat, how the IA marks are
+      divided — in the week before the exam, usually from someone who learned it the same way a year
+      earlier. Nothing is written down, so nothing improves.</p>
+
+    <h2 id="today">What exists today</h2>
+    <p>OpenCSE is one indexed, searchable, versioned place for CSE course material. Every subject from
+      first year to semester 8 has a page. Material on each page is sorted into manuals, notes, question
+      banks and slides, so a student looking for a lab manual does not have to scroll past three
+      semesters of unrelated files.</p>
+    <p>Most subjects also carry a revision sheet. Where real question papers exist, the sheet is paired
+      with a question bank taken from those papers, showing what has actually been asked and how often.
+      The site holds 49 courses, over 1,300 files and 47 revision sheets.</p>
+    <p>It is a static site built by a small Python script and hosted free on GitHub Pages. There are no
+      accounts, no ads and no tracking.</p>
+    <p>Material is contributed by students through pull requests. Third-party textbooks and college slide
+      decks are not hosted. A few source papers are image-only scans, so the question banks built from
+      them are thinner, and say so on the page.</p>
+
+    <h2 id="missing">What is missing</h2>
+    <p>Hosting and institutional support. The site costs nothing to run, but it is not reliably reachable
+      from campus networks, and most students will never find it by searching. It should be linked from
+      department pages, so that a first-year student looking for a syllabus or an old paper lands on it
+      without being told the address.</p>
+    <p>That is a small ask, and it is the bottleneck. One willing person with a server, a subdomain or a
+      word to the department would do more for the project than another few hundred lines of code.</p>
+    <aside class="callout">
+      <p class="label">The one blocker</p>
+      <p>Nothing here needs money. It needs a place to live that is reachable from the campus network,
+        and one person willing to own that address. A department subdomain or a lab server is enough.</p>
+    </aside>
+
+    <h2 id="next">What comes next: a club platform</h2>
+    <p>The same approach could carry the part of student life that currently runs on group chats.</p>
+    <ol>
+      <li>Every club in the college registers and gets its own page.</li>
+      <li>Each club posts what it does, who its office bearers are, and how to join.</li>
+      <li>Students apply to clubs through that page, instead of through a form that circulates once a year.</li>
+      <li>Clubs advertise hackathons, interviews, talks and events in one shared feed.</li>
+      <li>Students RSVP, see what they have attended, and check what is happening this week.</li>
+    </ol>
+    <p>It belongs on the same site because it fails in the same way: information that lives in a chat
+      disappears when the people holding it leave. A club page outlives its office bearers. It should
+      follow the same rules as the notes — static where possible, no tracking, maintained by students.</p>
+
+    <div class="flow">
+      <div class="step"><span>Step 01</span><h3>Club registers</h3>
+        <p>Office bearers claim a page, add what the club does and when it meets.</p></div>
+      <div class="step"><span>Step 02</span><h3>Club page</h3>
+        <p>One address per club: description, team, projects, contact, join link.</p></div>
+      <div class="step"><span>Step 03</span><h3>Student applies</h3>
+        <p>Open roles are listed; a form reaches the club, not a group chat.</p></div>
+      <div class="step"><span>Step 04</span><h3>Events feed</h3>
+        <p>Hackathons, interviews and talks in one dated list you can subscribe to.</p></div>
+    </div>
+
+    <h2 id="help">How you can help</h2>
+    <ul>
+      <li>Send a pull request with material you already have, or a paper that is missing.</li>
+      <li>Flag a syllabus topic or a paper we do not cover, even if you cannot supply the file.</li>
+      <li>Volunteer to host, or point us at someone who can.</li>
+      <li>Adopt a subject and keep its notes and question bank current as the syllabus changes.</li>
+    </ul>
+    <p>Everything on the site began with someone deciding their own folder was worth sharing. That is
+      still the whole method.</p>
+  </main>
+
+  <aside class="rail" aria-label="On this page">
+    <p>On this page</p>
+    <ol>
+      <li><a href="#problem">The problem</a></li>
+      <li><a href="#today">What exists today</a></li>
+      <li><a href="#missing">What is missing</a></li>
+      <li><a href="#next">What comes next</a></li>
+      <li><a href="#help">How you can help</a></li>
+    </ol>
+  </aside>
+
+  <footer>
+    <p><strong>OpenCSE</strong> · an unofficial, student-run project. Not affiliated with, or endorsed by,
+      any college or exam board. Course names and syllabus topics belong to their institutions.</p>
+    <p>Notes are shared under CC BY-SA 4.0; the generator is MIT.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var buttons = document.querySelectorAll("[data-theme-set]");
+  function paint() {
+    var current = root.getAttribute("data-theme");
+    buttons.forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-theme-set") === current ? "true" : "false");
+    });
+  }
+  paint();
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var next = b.getAttribute("data-theme-set");
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("vision-theme", next); } catch (e) {}
+      paint();
+    });
+  });
+})();
+</script>
+</body>
+</html>

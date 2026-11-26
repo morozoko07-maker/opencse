@@ -496,7 +496,6 @@ PAGE = """<!DOCTYPE html>
     </div>
     <div>
       <p class="foot-label">Project</p>
-      <a href="%%ROOT%%vision/index.html">Vision</a>
       <a href="https://github.com/morozoko07-maker/opencse/blob/main/DISCLAIMER.md">Disclaimer</a>
       <a href="https://github.com/morozoko07-maker/opencse/blob/main/CONTRIBUTING.md">Contributing</a>
       <a href="https://github.com/morozoko07-maker/opencse">Source</a>
@@ -532,7 +531,6 @@ def sidebar_html(courses: list[Course], active_dir: str | None, root: str) -> st
 
     parts = ['<nav class="nav">', f'<a class="nav-home" href="{root}index.html">Home</a>']
     parts.append(f'<a class="nav-home" href="{root}courses/index.html">All courses</a>')
-    parts.append(f'<a class="nav-home" href="{root}vision/index.html">Vision</a>')
     for label, _code, sems in YEAR_GROUPS:
         present = [s for s in sems if by_sem.get(s)]
         if not present:
@@ -688,63 +686,6 @@ def render_index(courses: list[Course]) -> None:
         parts.append("</section>")
 
     page("index.html", SITE_NAME, "\n".join(parts), courses, None)
-
-
-def render_vision(courses: list[Course]) -> None:
-    src = ROOT / "vision.md"
-    if not src.exists():
-        return
-    meta, body = read_front_matter(src.read_text(encoding="utf-8"))
-    body_html = md_to_html(body)
-
-    flow = (
-        '<div class="flow">'
-        '<div class="flow-step"><span>Step 01</span><h3>Club registers</h3>'
-        "<p>Office bearers claim a page, add what the club does and when it meets.</p></div>"
-        '<div class="flow-step"><span>Step 02</span><h3>Club page</h3>'
-        "<p>One address per club: description, team, projects, contact, join link.</p></div>"
-        '<div class="flow-step"><span>Step 03</span><h3>Student applies</h3>'
-        "<p>Open roles are listed; a form reaches the club, not a group chat.</p></div>"
-        '<div class="flow-step"><span>Step 04</span><h3>Events feed</h3>'
-        "<p>Hackathons, interviews and talks in one dated list you can subscribe to.</p></div>"
-        "</div>"
-    )
-    callout = (
-        '<aside class="callout"><p class="callout-label">The one blocker</p>'
-        "<p>Nothing here needs money. It needs a place to live that is reachable from "
-        "the campus network, and one person willing to own that address. A department "
-        "subdomain or a lab server is enough.</p></aside>"
-    )
-    marker = '<h2 id="how-you-can-help">'
-    if marker in body_html:
-        body_html = body_html.replace(marker, flow + marker, 1)
-    next_marker = '<h2 id="what-comes-next'
-    if next_marker in body_html:
-        body_html = body_html.replace(next_marker, callout + next_marker, 1)
-
-    total_files = sum(len(c.files) for c in courses)
-    total_sheets = sum(
-        1 for c in courses
-        if any(d.source.name == "revision-sheet.md" for d in c.docs)
-    )
-    hero = (
-        '<section class="vision-hero">'
-        '<p class="eyebrow">Why this exists</p>'
-        "<h1>Course material should outlive the batch that made it.</h1>"
-        '<p class="lede">Every year the same notes are collected again, the same papers '
-        "are hunted down again, and the same advice is passed on in private. This site is "
-        "one attempt to stop that cycle — and the first piece of something larger.</p>"
-        '<div class="vision-stats">'
-        f"<div><strong>{len(courses)}</strong><span>courses</span></div>"
-        f"<div><strong>{total_files}</strong><span>files</span></div>"
-        f"<div><strong>{total_sheets}</strong><span>revision sheets</span></div>"
-        "<div><strong>0</strong><span>trackers or ads</span></div>"
-        "</div>"
-        "</section>"
-    )
-    page("vision/index.html", "Why this exists",
-         hero + f'<article class="prose vision">{body_html}</article>', courses, None,
-         rail=toc_html(body_html))
 
 
 def render_all_courses(courses: list[Course]) -> None:
@@ -927,7 +868,6 @@ def main() -> int:
 
     render_index(courses)
     render_all_courses(courses)
-    render_vision(courses)
     for course in courses:
         render_course(course, courses)
     render_search_index(courses)
