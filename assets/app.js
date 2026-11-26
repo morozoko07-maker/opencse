@@ -8,7 +8,7 @@
   /* ---- theme: light, charcoal, pitch-black OLED ---- */
   var themeBtns = document.querySelectorAll("[data-theme-set]");
   var themeMeta = document.querySelector('meta[name="theme-color"]');
-  var THEME_COLOURS = { light: "#eeecea", dark: "#1c1c1c", oled: "#000000" };
+  var THEME_COLOURS = { light: "#eeecea", dark: "#121212", midnight: "#000000" };
 
   function paintTheme() {
     var current = htmlEl.getAttribute("data-theme") || "dark";

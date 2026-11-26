@@ -106,6 +106,16 @@ issue or a PR.
 
 ## Licence
 
-Text and notes are shared under [CC BY-SA 4.0](LICENSE): use and adapt freely,
-credit the authors, keep the same licence. Third-party material remains the
-property of its owners.
+Two licences, split by what the file is:
+
+- **Written content** — notes, revision sheets, course pages (`courses/`, `*.md`)
+  are [CC BY-SA 4.0](LICENSE). Use and adapt freely, credit the authors, keep the
+  same licence.
+- **Code** — the generator, scripts and stylesheet (`scripts/`, `assets/`) are
+  [MIT](LICENSE-CODE). Do whatever you like with them.
+
+Why the split: MIT is a software licence and says nothing useful about prose,
+and applying it to notes would let someone republish them under a stricter
+licence. CC BY-SA keeps the notes open. Third-party material (model papers,
+textbooks, slide decks) remains the property of its owners and is not covered by
+either licence.

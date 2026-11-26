@@ -55,6 +55,26 @@ def pretty_semester(name: str) -> str:
     return f"Semester {m.group(1)}" if m else name.replace("-", " ").title()
 
 
+YEAR_GROUPS = [
+    ("First year", "01\u201302", ["first-year"]),
+    ("Second year", "03\u201304", ["semester-3", "semester-4"]),
+    ("Third year", "05\u201306", ["semester-5", "semester-6"]),
+    ("Fourth year", "07\u201308", ["semester-7", "semester-8"]),
+]
+
+
+def year_label(sem: str | None) -> str | None:
+    for label, _code, sems in YEAR_GROUPS:
+        if sem in sems:
+            return label
+    return None
+
+
+def course_sort(c: "Course") -> tuple:
+    order = {"Physics": 0, "Chemistry": 1}
+    return (order.get(c.meta.get("cycle", ""), 0), c.title.lower())
+
+
 def sem_code(name: str) -> str:
     if name == "first-year":
         return "01–02"
@@ -431,14 +451,14 @@ PAGE = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>%%TITLE%%</title>
 <meta name="description" content="%%DESC%%">
-<meta name="theme-color" content="#1c1c1c">
+<meta name="theme-color" content="#121212">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="icon" href="%%ROOT%%assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="%%ROOT%%assets/style.css">
 <script>
-(function(){var t=null;try{var m=/[?&]theme=(light|dark|oled)/.exec(location.search);t=m?m[1]:localStorage.getItem("opencse-theme");}catch(e){}document.documentElement.setAttribute("data-theme",t||"dark");})();
+(function(){var t=null;try{var m=/[?&]theme=(light|dark|midnight|oled)/.exec(location.search);t=m?m[1]:localStorage.getItem("opencse-theme");}catch(e){}document.documentElement.setAttribute("data-theme",t||"dark");})();
 </script>
 </head>
 <body>
@@ -453,7 +473,7 @@ PAGE = """<!DOCTYPE html>
   <div class="themebar" role="group" aria-label="Colour theme">
     <button type="button" data-theme-set="light">Light</button>
     <button type="button" data-theme-set="dark">Dark</button>
-    <button type="button" data-theme-set="oled">OLED</button>
+    <button type="button" data-theme-set="midnight">Midnight</button>
   </div>
 </header>
 <div class="layout">
@@ -479,7 +499,8 @@ PAGE = """<!DOCTYPE html>
     <div>
       <p class="foot-label">Licence</p>
       <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
-      <span class="foot-note">Share and adapt, credit the authors.</span>
+      <a href="https://github.com/morozoko07-maker/opencse/blob/main/LICENSE-CODE">MIT (code)</a>
+      <span class="foot-note">Notes stay open; the generator is MIT.</span>
     </div>
   </div>
   <p class="fine">Unofficial and unaffiliated. Course names, codes and syllabus topics belong to their respective institutions. Material is shared for study only.</p>
@@ -502,27 +523,35 @@ def sidebar_html(courses: list[Course], active_dir: str | None, root: str) -> st
         by_sem.setdefault(c.semester, []).append(c)
 
     active_sem = active_dir.split("/")[1] if active_dir else None
+    active_year = year_label(active_sem) if active_sem else None
+
     parts = ['<nav class="nav">', f'<a class="nav-home" href="{root}index.html">Home</a>']
     parts.append(f'<a class="nav-home" href="{root}courses/index.html">All courses</a>')
-    for sem in sorted(by_sem):
-        opened = " open" if sem == active_sem else ""
+    for label, _code, sems in YEAR_GROUPS:
+        present = [s for s in sems if by_sem.get(s)]
+        if not present:
+            continue
+        opened = " open" if label == active_year else ""
         parts.append(
             f'<details class="nav-group"{opened}>'
-            f'<summary class="nav-label">{pretty_semester(sem)}</summary><ul>'
+            f'<summary class="nav-label">{label}</summary><ul>'
         )
-        for c in sorted(by_sem[sem], key=lambda x: x.title.lower()):
-            active = " active" if c.url_dir == active_dir else ""
-            parts.append(
-                f'<li><a class="nav-link{active}" href="{root}{c.url_dir}/index.html">'
-                f'<span>{html.escape(c.title)}</span></a></li>'
-            )
-            if c.url_dir == active_dir and len(c.docs) > 1:
-                parts.append('<li><ul class="nav-sub">')
-                for d in c.docs[1:]:
-                    parts.append(
-                        f'<li><a href="{root}{d.out_rel}">{html.escape(d.title)}</a></li>'
-                    )
-                parts.append("</ul></li>")
+        for sem in present:
+            if label != "First year":
+                parts.append(f'<li class="nav-sublabel">{pretty_semester(sem)}</li>')
+            for c in sorted(by_sem[sem], key=course_sort):
+                active = " active" if c.url_dir == active_dir else ""
+                parts.append(
+                    f'<li><a class="nav-link{active}" href="{root}{c.url_dir}/index.html">'
+                    f'<span>{html.escape(c.title)}</span></a></li>'
+                )
+                if c.url_dir == active_dir and len(c.docs) > 1:
+                    parts.append('<li><ul class="nav-sub">')
+                    for d in c.docs[1:]:
+                        parts.append(
+                            f'<li><a href="{root}{d.out_rel}">{html.escape(d.title)}</a></li>'
+                        )
+                    parts.append("</ul></li>")
         parts.append("</ul></details>")
     parts.append("</nav>")
     return "\n".join(parts)
@@ -565,18 +594,19 @@ def render_index(courses: list[Course]) -> None:
     total_docs = sum(len(c.docs) for c in courses)
     total_files = sum(len(c.files) for c in courses)
     total_bytes = sum(f[1] for c in courses for f in c.files)
-    first_sem = sorted(by_sem)[0] if by_sem else "semester-3"
+    years = [g for g in YEAR_GROUPS if any(by_sem.get(s) for s in g[2])]
+    first_anchor = slugify(years[0][0]) if years else "first-year"
 
     parts = [
         '<section class="hero">',
         '<div class="hero-copy">',
         '<p class="eyebrow">Unofficial · student-run</p>',
         '<h1>Notes for the<br>CSE syllabus.</h1>',
-        '<p class="lede">Every subject from first year to final project, in one place: written '
-        "summaries, previous year papers and lab work, organised so the next batch "
-        "starts further ahead than we did.</p>",
+        '<p class="lede">Every subject from first year to final project, in one place: '
+        "written summaries, previous year papers and lab work, organised so the next "
+        "batch starts further ahead than we did.</p>",
         '<div class="hero-actions">'
-        f'<a class="btn" href="#{first_sem}">Start with {pretty_semester(first_sem).lower()}</a>'
+        f'<a class="btn" href="#{first_anchor}">Start with {years[0][0].lower()}</a>'
         '<a class="link" href="courses/index.html">All courses<span class="arrow">→</span></a>'
         "</div>",
         "</div>",
@@ -584,11 +614,11 @@ def render_index(courses: list[Course]) -> None:
         '<p class="index-label">Contents</p>',
         "<ol>",
     ]
-    for sem in sorted(by_sem):
-        n = len(by_sem[sem])
+    for label, code, sems in years:
+        n = sum(len(by_sem.get(s, [])) for s in sems)
         parts.append(
-            f'<li><a href="#{sem}"><span class="ix-n">{sem_code(sem)}</span>'
-            f'<span class="ix-t">{pretty_semester(sem)}</span>'
+            f'<li><a href="#{slugify(label)}"><span class="ix-n">{code}</span>'
+            f'<span class="ix-t">{label}</span>'
             f'<span class="ix-c">{plural(n, "course")}</span></a></li>'
         )
     parts += [
@@ -600,48 +630,56 @@ def render_index(courses: list[Course]) -> None:
         "</section>",
     ]
 
-    for sem in sorted(by_sem):
-        n = len(by_sem[sem])
+    for label, code, sems in years:
+        present = [s for s in sems if by_sem.get(s)]
+        n = sum(len(by_sem[s]) for s in present)
         parts.append(
-            f'<section class="sem-block" id="{sem}">'
-            f'<div class="sem-head"><h2><span class="num">{sem_code(sem)}</span>'
-            f'{pretty_semester(sem)}</h2><span class="count">{plural(n, "course")}</span></div>'
-            '<div class="cards">'
+            f'<section class="sem-block" id="{slugify(label)}">'
+            f'<div class="sem-head"><h2><span class="num">{code}</span>{label}</h2>'
+            f'<span class="count">{plural(n, "course")}</span></div>'
         )
-        if sem == "first-year":
-            parts[-1] = parts[-1].replace(
-                '<div class="cards">',
-                '<p class="sem-note">First year runs two cycles. Both subject sets are '
-                'listed here; you take one cycle each semester.</p><div class="cards">',
-            )
-        for i, c in enumerate(sorted(by_sem[sem], key=lambda x: ({"Physics": 0, "Chemistry": 1}.get(x.meta.get("cycle", ""), 0), x.title.lower())), 1):
-            chips = []
-            if c.meta.get("cycle"):
-                chips.append(f'<span class="chip">{html.escape(c.meta["cycle"])} cycle</span>')
-            if c.meta.get("credits"):
-                chips.append(f'<span class="chip">{html.escape(c.meta["credits"])} credit{"s" if c.meta["credits"] != "1" else ""}</span>')
-            summary = c.meta.get("summary", "")
-            pending = not c.files and len(c.docs) <= 1
-            cls = "card pending" if pending else "card"
-            meta = (
-                "Awaiting material"
-                if pending
-                else f"{plural(len(c.docs), 'page')} · {plural(len(c.files), 'file')}"
-            )
+        if label == "First year":
             parts.append(
-                f'<a class="{cls}" href="{c.url_dir}/index.html">'
-                f'<div class="card-top"><span class="card-num">{i:02d}</span>'
-                f'<span class="card-code">{html.escape(c.meta.get("code", "—"))}</span></div>'
-                f'<h3>{html.escape(c.title)}</h3>'
-                f'<p>{html.escape(summary) if summary else "Notes and resources."}</p>'
-                f'<div class="chips">{"".join(chips)}</div>'
-                f'<div class="card-foot"><span class="card-meta">{meta}</span>'
-                f'<span class="card-go">{"" if pending else "→"}</span></div>'
-                "</a>"
+                '<p class="sem-note">First year runs two cycles. Both subject sets are '
+                "listed here; you take one cycle each semester.</p>"
             )
-        parts.append("</div></section>")
+        for sem in present:
+            if label != "First year":
+                parts.append(f'<p class="sem-sub">{pretty_semester(sem)}</p>')
+            parts.append('<div class="cards">')
+            for i, c in enumerate(sorted(by_sem[sem], key=course_sort), 1):
+                chips = []
+                if c.meta.get("cycle"):
+                    chips.append(f'<span class="chip">{html.escape(c.meta["cycle"])} cycle</span>')
+                if c.meta.get("credits"):
+                    chips.append(
+                        f'<span class="chip">{html.escape(c.meta["credits"])} credit'
+                        f'{"s" if c.meta["credits"] != "1" else ""}</span>'
+                    )
+                summary = c.meta.get("summary", "")
+                pending = not c.files and len(c.docs) <= 1
+                cls = "card pending" if pending else "card"
+                meta = (
+                    "Awaiting material"
+                    if pending
+                    else f"{plural(len(c.docs), 'page')} · {plural(len(c.files), 'file')}"
+                )
+                parts.append(
+                    f'<a class="{cls}" href="{c.url_dir}/index.html">'
+                    f'<div class="card-top"><span class="card-num">{i:02d}</span>'
+                    f'<span class="card-code">{html.escape(c.meta.get("code", "—"))}</span></div>'
+                    f'<h3>{html.escape(c.title)}</h3>'
+                    f'<p>{html.escape(summary) if summary else "Notes and resources."}</p>'
+                    f'<div class="chips">{"".join(chips)}</div>'
+                    f'<div class="card-foot"><span class="card-meta">{meta}</span>'
+                    f'<span class="card-go">{"" if pending else "→"}</span></div>'
+                    "</a>"
+                )
+            parts.append("</div>")
+        parts.append("</section>")
 
     page("index.html", SITE_NAME, "\n".join(parts), courses, None)
+
 
 def render_all_courses(courses: list[Course]) -> None:
     rows = []

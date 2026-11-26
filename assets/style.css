@@ -1,9 +1,9 @@
 /* OpenCSE — charcoal-room-sage (dark) / three-stones (light).
    One system, quiet motion, flat grounds. */
 :root {
-  --bg: #1c1c1c;
-  --surface: #262626;
-  --panel: #202020;
+  --bg: #121212;
+  --surface: #1a1a1a;
+  --panel: #161616;
   --border: rgba(241, 241, 239, .11);
   --border-strong: rgba(241, 241, 239, .26);
   --ink: #f1f1ef;
@@ -374,7 +374,7 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 }
 
 /* ---------- OLED: true black, easier at night ---------- */
-html[data-theme="oled"] {
+html[data-theme="midnight"], html[data-theme="oled"] {
   --bg: #000000;
   --surface: #0a0a0a;
   --panel: #060606;
@@ -481,3 +481,17 @@ th, td { padding: 11px 12px; }
   transition: color .16s ease, border-color .16s ease;
 }
 .topics li a:hover { color: var(--ink); border-color: var(--border-strong); }
+
+/* ---------- year subheadings ---------- */
+.sem-sub {
+  margin: 34px 0 0; padding-bottom: 8px;
+  font-family: var(--mono); font-size: .62rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.sem-sub + .cards { margin-top: 14px; }
+.nav-sublabel {
+  margin: 8px 0 4px; padding: 0 8px;
+  font-family: var(--mono); font-size: .58rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted);
+}
